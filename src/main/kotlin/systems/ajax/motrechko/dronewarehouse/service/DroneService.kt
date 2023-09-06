@@ -2,14 +2,16 @@ package systems.ajax.motrechko.dronewarehouse.service
 
 import org.springframework.stereotype.Service
 import systems.ajax.motrechko.dronewarehouse.dto.response.DroneResponse
+import systems.ajax.motrechko.dronewarehouse.exception.DroneNotFoundException
 import systems.ajax.motrechko.dronewarehouse.model.Drone
 import systems.ajax.motrechko.dronewarehouse.repository.DroneRepository
 
 @Service
 class DroneService(private val droneRepository: DroneRepository) {
     fun getAllDrones(): List<Drone> = droneRepository.findAll()
-    fun getDroneById(id: String): Drone = droneRepository.findById(id).
-            orElseThrow()
+    fun getDroneById(id: String): Drone =
+        droneRepository.findById(id).orElseThrow { DroneNotFoundException("Drone with id $id not found") }
+
     fun findDroneById(id: String): Drone? = droneRepository.findById(id).orElse(null)
 
     fun createDrone(drone: Drone): Drone = droneRepository.save(drone)
