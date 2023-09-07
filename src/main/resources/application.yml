@@ -1,0 +1,9 @@
+spring:
+  data:
+    mongodb:
+      database: drone
+      port: 27017
+      host: localhost
+      password: secret
+      username: root
+      authentication-database: admin
