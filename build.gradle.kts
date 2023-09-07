@@ -31,13 +31,6 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
-tasks {
-    val detekt by getting(Detekt::class)
-
-    bootRun {
-        dependsOn(detekt)
-    }
-}
 
 
 tasks.withType<KotlinCompile> {
