@@ -14,9 +14,7 @@ data class Drone(
     val type: List<DroneType> = emptyList(),
     val speed: Double = 0.0,
     val weight: Double = 0.0,
-    @Field("number_of_propellers")
     val numberOfPropellers: Int = 0,
-    @Field("load_capacity")
     val loadCapacity: Double = 0.0,
     val cost: Double = 0.0
 )
