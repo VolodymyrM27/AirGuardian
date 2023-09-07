@@ -18,7 +18,7 @@ class GlobalExceptionHandler {
             statusCode = HttpStatus.NOT_FOUND.value(),
             time = LocalDateTime.now()
         )
-        return ResponseEntity(errorDetail, HttpStatus.BAD_REQUEST)
+        return ResponseEntity(errorDetail, HttpStatus.NOT_FOUND)
     }
 
 }
