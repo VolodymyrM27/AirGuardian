@@ -1,7 +1,6 @@
 package systems.ajax.motrechko.dronewarehouse.dto.request
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
 import systems.ajax.motrechko.dronewarehouse.enums.DroneType
 import systems.ajax.motrechko.dronewarehouse.model.Drone
 

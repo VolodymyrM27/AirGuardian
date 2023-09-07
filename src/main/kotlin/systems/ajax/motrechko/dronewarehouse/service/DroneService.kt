@@ -1,8 +1,6 @@
 package systems.ajax.motrechko.dronewarehouse.service
 
 import org.springframework.stereotype.Service
-import systems.ajax.motrechko.dronewarehouse.dto.response.DroneResponse
-import systems.ajax.motrechko.dronewarehouse.enums.DroneType
 import systems.ajax.motrechko.dronewarehouse.exception.DroneNotFoundException
 import systems.ajax.motrechko.dronewarehouse.model.Drone
 import systems.ajax.motrechko.dronewarehouse.repository.DroneRepository
