@@ -1,5 +1,5 @@
 package systems.ajax.motrechko.dronewarehouse.enums
 
 enum class DroneType {
-    FPV, SCOUT, BOMBER, CORRECTIVE
+    FPV, SCOUT, BOMBER, MONITORING, DELIVERY
 }
