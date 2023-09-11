@@ -21,4 +21,15 @@ class GlobalExceptionHandler {
         return ResponseEntity(errorDetail, HttpStatus.NOT_FOUND)
     }
 
+    @ExceptionHandler(Exception::class)
+    fun handleOtherExceptions(request: HttpServletRequest, exception: Exception): ResponseEntity<ApiError> {
+        val errorDetail = ApiError(
+            path = request.requestURI,
+            message = exception.message,
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            time = LocalDateTime.now()
+        )
+        return ResponseEntity(errorDetail, HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
 }
