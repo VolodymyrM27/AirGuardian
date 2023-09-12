@@ -3,6 +3,8 @@ package systems.ajax.motrechko.airguardian.exception
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.FieldError
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import java.time.LocalDateTime
@@ -11,7 +13,7 @@ import java.time.LocalDateTime
 class GlobalExceptionHandler {
 
     @ExceptionHandler(DroneNotFoundException::class)
-    fun droneNotFound(request: HttpServletRequest, exception: DroneNotFoundException) : ResponseEntity<ApiError> {
+    fun droneNotFound(request: HttpServletRequest, exception: DroneNotFoundException): ResponseEntity<ApiError> {
         val errorDetail = ApiError(
             path = request.requestURI,
             message = exception.message,
@@ -30,5 +32,23 @@ class GlobalExceptionHandler {
             time = LocalDateTime.now()
         )
         return ResponseEntity(errorDetail, HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleValidationException(
+        ex: MethodArgumentNotValidException,
+        request: HttpServletRequest
+    ): ResponseEntity<ApiError> {
+        val fieldErrors: List<FieldError> = ex.getFieldErrors()
+        val errorMessage: String = fieldErrors
+            .map { it.defaultMessage }
+            .joinToString(", ")
+        val errorDetail = ApiError(
+            path = request.requestURI,
+            message = errorMessage,
+            statusCode = HttpStatus.BAD_REQUEST.value(),
+            time = LocalDateTime.now()
+        )
+        return ResponseEntity(errorDetail, HttpStatus.BAD_REQUEST)
     }
 }
