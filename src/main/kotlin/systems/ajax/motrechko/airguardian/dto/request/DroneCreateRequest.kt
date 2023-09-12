@@ -8,27 +8,22 @@ import systems.ajax.motrechko.airguardian.enums.DroneType
 import systems.ajax.motrechko.airguardian.model.Drone
 
 data class DroneCreateRequest(
-    @NotBlank
+    @field:NotBlank(message = "model must not be blank")
     val model: String,
     val type: List<DroneType> = emptyList(),
-    @NotBlank
-    @Min(0)
+    @field:Min(value = 10, message = "Speed must be at least 10 km/h")
     val speed: Double,
-    @NotBlank
-    @Min(0)
+    @field:Min(value = 0, message = "Weight must be at least 0")
     val weight: Double,
-    @NotBlank
-    @Min(0)
+    @field:Min(value = 0, message = "Number of propellers must be at least 1")
     val numberOfPropellers: Int,
-    @NotBlank
-    @Min(0)
+    @field:Min(value = 0, message = "Load Capacity must be at least 0")
     val loadCapacity: Double,
-    @NotBlank
-    @Min(0)
-    val cost: Double,
     val status: DroneStatus,
+    @field:Min(value = 0, message = "Battery level must be at least 0")
     val batteryLevel: Double,
     val size: DroneSize,
+    @field:Min(value = 0, message = "Max flight altitude must be at least 0")
     val maxFlightAltitude: Double
 )
 
@@ -39,7 +34,6 @@ fun DroneCreateRequest.toEntity() = Drone(
     weight = weight,
     numberOfPropellers = numberOfPropellers,
     loadCapacity = loadCapacity,
-    cost = cost,
     status = status,
     batteryLevel = batteryLevel,
     size = size,

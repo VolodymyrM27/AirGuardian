@@ -1,5 +1,6 @@
 package systems.ajax.motrechko.airguardian.controller
 
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -45,7 +46,7 @@ class DroneController(
 
     @PostMapping
     fun createDrone(
-        @RequestBody droneCreateRequest: DroneCreateRequest
+        @Valid @RequestBody droneCreateRequest: DroneCreateRequest
     ): ResponseEntity<DroneResponse> {
         val drone = droneService.createDrone(droneCreateRequest.toEntity())
         return ResponseEntity.ok(drone.toResponse())
