@@ -31,5 +31,4 @@ class GlobalExceptionHandler {
         )
         return ResponseEntity(errorDetail, HttpStatus.INTERNAL_SERVER_ERROR)
     }
-
 }

@@ -13,8 +13,6 @@ import systems.ajax.motrechko.airguardian.service.DeliveryOrderService
 class DeliveryController(
     private val deliveryOrderService: DeliveryOrderService,
 ) {
-
     @PostMapping
     fun createNewOrder(@RequestBody order: OrderCreateRequest) = deliveryOrderService.createNewOrder(order.toEntity())
-
 }

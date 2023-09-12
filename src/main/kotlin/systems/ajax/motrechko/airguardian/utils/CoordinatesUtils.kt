@@ -20,6 +20,7 @@ object CoordinatesUtils {
 
         return Coordinates(randomLatitude, randomLongitude)
     }
+
     fun calculateFlightDistance(start: Coordinates, end: Coordinates): Double {
 
 
@@ -38,4 +39,3 @@ object CoordinatesUtils {
         return EARTH_RADIUS * c
     }
 }
-

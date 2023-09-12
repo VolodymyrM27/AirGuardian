@@ -7,7 +7,6 @@ import systems.ajax.motrechko.airguardian.enums.DroneStatus
 import systems.ajax.motrechko.airguardian.enums.DroneType
 import systems.ajax.motrechko.airguardian.model.Drone
 
-
 data class DroneCreateRequest(
     @NotBlank
     val model: String,

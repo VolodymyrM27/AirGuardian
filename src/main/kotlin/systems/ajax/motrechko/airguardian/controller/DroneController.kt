@@ -51,4 +51,3 @@ class DroneController(
         return ResponseEntity.ok(drone.toResponse())
     }
 }
-

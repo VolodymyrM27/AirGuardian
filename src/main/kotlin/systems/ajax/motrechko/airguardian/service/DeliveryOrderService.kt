@@ -30,7 +30,6 @@ class DeliveryOrderService(
         }
     }
 
-
     private fun initializeOrderForDelivery(order: DeliveryOrder, drones: List<Drone>) {
         val currentTime = LocalDateTime.now()
         val randomStartPosition = CoordinatesUtils.generateRandomCoordinates()
@@ -39,6 +38,7 @@ class DeliveryOrderService(
             initializeDroneForDelivery(drone, order, currentTime, randomStartPosition)
         }
     }
+
     private fun initializeDroneForDelivery(
         drone: Drone,
         order: DeliveryOrder,
@@ -55,8 +55,9 @@ class DeliveryOrderService(
         order.deliveryDrone = listOf(drone)
         order.status = DeliveryStatus.IN_PROGRESS
     }
+
     private fun findAvailableDrones(items: List<DeliveryItem>): List<Drone> {
-       // val totalWeight = items.getTotalWeight()
+        // val totalWeight = items.getTotalWeight()
 
         TODO("Create a basic logic for finding the right number of drones")
 
@@ -79,5 +80,4 @@ class DeliveryOrderService(
             flightDuration = Duration.parse("30")
         )
     }
-
 }

@@ -9,5 +9,4 @@ data class DeliveryItem(
     val weight: Double
 )
 
-fun List<DeliveryItem>.getTotalWeight(): Double = this.sumOf { it.weight }
-
+fun List<DeliveryItem>.getTotalWeight(): Double = sumOf { it.weight }
