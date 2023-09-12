@@ -22,8 +22,6 @@ object CoordinatesUtils {
     }
 
     fun calculateFlightDistance(start: Coordinates, end: Coordinates): Double {
-
-
         val startLatitudeRadians = Math.toRadians(start.latitude)
         val endLatitudeRadians = Math.toRadians(end.latitude)
 
