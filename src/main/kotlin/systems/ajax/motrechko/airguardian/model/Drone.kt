@@ -7,7 +7,7 @@ import systems.ajax.motrechko.airguardian.enums.DroneSize
 import systems.ajax.motrechko.airguardian.enums.DroneStatus
 import systems.ajax.motrechko.airguardian.enums.DroneType
 
-@Document("drones")
+@Document("drone")
 data class Drone(
     @Id
     val id: ObjectId = ObjectId(),
@@ -18,9 +18,9 @@ data class Drone(
     val numberOfPropellers: Int = 0,
     val loadCapacity: Double = 0.0,
     val cost: Double = 0.0,
-    val status: DroneStatus = DroneStatus.INACTIVE,
-    val batteryLevel: Double = 100.0,
-    val flightHistory: List<FlightRecord> = emptyList(),
+    var status: DroneStatus = DroneStatus.INACTIVE,
+    var batteryLevel: Double = 100.0,
+    var flightHistory: List<FlightRecord> = emptyList(),
     val size: DroneSize = DroneSize.MEDIUM,
     val maxFlightAltitude: Double = 0.0
 )

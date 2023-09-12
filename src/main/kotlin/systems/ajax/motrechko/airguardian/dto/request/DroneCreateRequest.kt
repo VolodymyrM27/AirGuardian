@@ -1,6 +1,5 @@
 package systems.ajax.motrechko.airguardian.dto.request
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import systems.ajax.motrechko.airguardian.enums.DroneSize
@@ -9,7 +8,7 @@ import systems.ajax.motrechko.airguardian.enums.DroneType
 import systems.ajax.motrechko.airguardian.model.Drone
 
 
-data class DroneCreateRequest @JsonCreator constructor(
+data class DroneCreateRequest(
     @NotBlank
     val model: String,
     val type: List<DroneType> = emptyList(),
