@@ -1,4 +1,4 @@
-package systems.ajax.motrechko.dronewarehouse.exception
+package systems.ajax.motrechko.airguardian.exception
 
 import java.time.LocalDateTime
 
