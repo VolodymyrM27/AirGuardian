@@ -9,19 +9,29 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import systems.ajax.motrechko.airguardian.dto.request.DroneCreateRequest
+import systems.ajax.motrechko.airguardian.dto.request.StatusRequest
 import systems.ajax.motrechko.airguardian.dto.request.toEntity
 import systems.ajax.motrechko.airguardian.dto.response.DroneResponse
 import systems.ajax.motrechko.airguardian.dto.response.toResponse
+import systems.ajax.motrechko.airguardian.enums.DroneStatus
 import systems.ajax.motrechko.airguardian.service.DroneService
 
 @RestController
 @RequestMapping("/api/V1/drone")
-class DroneController(private val droneService: DroneService) {
+class DroneController(
+    private val droneService: DroneService
+) {
 
     @GetMapping
     fun getAllDrone(): ResponseEntity<List<DroneResponse>> = ResponseEntity.ok(
         droneService.getAllDrones().toResponse()
     )
+
+    @GetMapping("/status")
+    fun getAllDroneByStatus(@RequestBody droneStatus: StatusRequest): ResponseEntity<List<DroneResponse>> {
+        println(droneStatus.status)
+        return ResponseEntity.ok(droneService.findDroneByStatus(DroneStatus.valueOf(droneStatus.status)).toResponse())
+    }
 
     @GetMapping("/{id}")
     fun getDroneById(@PathVariable id: String): ResponseEntity<DroneResponse> = ResponseEntity.ok(
@@ -41,3 +51,4 @@ class DroneController(private val droneService: DroneService) {
         return ResponseEntity.ok(drone.toResponse())
     }
 }
+
