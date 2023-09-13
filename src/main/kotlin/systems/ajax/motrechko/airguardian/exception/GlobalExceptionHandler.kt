@@ -39,7 +39,7 @@ class GlobalExceptionHandler {
         ex: MethodArgumentNotValidException,
         request: HttpServletRequest
     ): ResponseEntity<ApiError> {
-        val fieldErrors: List<FieldError> = ex.getFieldErrors()
+        val fieldErrors: List<FieldError> = ex.fieldErrors
         val errorMessage: String = fieldErrors
             .map { it.defaultMessage }
             .joinToString(", ")
