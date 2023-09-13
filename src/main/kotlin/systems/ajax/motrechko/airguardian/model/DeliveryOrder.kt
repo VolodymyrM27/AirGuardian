@@ -14,5 +14,5 @@ data class DeliveryOrder(
     val deliveryCoordinates: Coordinates,
     var items: List<DeliveryItem> = emptyList(),
     var status: DeliveryStatus = DeliveryStatus.PENDING,
-    var deliveryDrone: List<Drone>? = emptyList()
+    var deliveryDrone: List<Drone> = emptyList()
 )

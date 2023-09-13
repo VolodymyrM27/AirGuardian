@@ -11,7 +11,7 @@ data class DeliveryOrderResponse(
     val deliveryCoordinates: Coordinates,
     var items: List<DeliveryItem> = emptyList(),
     var status: DeliveryStatus = DeliveryStatus.PENDING,
-    var deliveryDrone: List<DroneResponse>? = emptyList()
+    var deliveryDrone: List<DroneResponse> = emptyList()
 )
 
 fun DeliveryOrder.toResponse() = DeliveryOrderResponse(
@@ -20,5 +20,5 @@ fun DeliveryOrder.toResponse() = DeliveryOrderResponse(
     deliveryCoordinates = deliveryCoordinates,
     items = items,
     status = status,
-    deliveryDrone = deliveryDrone?.toResponse()
+    deliveryDrone = deliveryDrone.toResponse()
 )
