@@ -4,10 +4,14 @@ import org.springframework.stereotype.Service
 import systems.ajax.motrechko.airguardian.enums.DroneStatus
 import systems.ajax.motrechko.airguardian.exception.DroneNotFoundException
 import systems.ajax.motrechko.airguardian.model.Drone
+import systems.ajax.motrechko.airguardian.repository.DroneCustomMongoRepository
 import systems.ajax.motrechko.airguardian.repository.DroneRepository
 
 @Service
-class DroneService(private val droneRepository: DroneRepository) {
+class DroneService(
+    private val droneRepository: DroneRepository,
+    private val droneCustomRepository: DroneCustomMongoRepository
+) {
 
     fun getAllDrones(): List<Drone> = droneRepository.findAll()
 
@@ -19,5 +23,8 @@ class DroneService(private val droneRepository: DroneRepository) {
     fun deleteDroneById(id: String) = droneRepository.deleteById(id)
     fun findDroneByStatus(droneStatus: DroneStatus): List<Drone> =
         droneRepository.findByStatus(droneStatus)
+
+    fun updateDroneInfo(drone: Drone) =
+        droneCustomRepository.updateDroneInfo(drone)
 
 }
