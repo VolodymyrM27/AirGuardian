@@ -70,11 +70,9 @@ class DeliveryOrderService(
         drone.flightHistory += createFlightRecord(currentTime, randomStartPosition, order.deliveryCoordinates)
         droneService.updateDroneInfo(drone)
 
-
         order.deliveryDrone = listOf(drone)
         order.status = DeliveryStatus.IN_PROGRESS
     }
-
 
     private fun findAvailableDrones(items: List<DeliveryItem>): List<Drone> {
         val totalWeight = items.getTotalWeight()
@@ -89,8 +87,8 @@ class DeliveryOrderService(
     }
 
     private fun findDronesForTotalCargo(totalWeight: Double): List<Drone> {
-        val drone = deliveryOrderCustomRepository.findAvailableDronesToDelivery(totalWeight)
-        return if (!drone.isNullOrEmpty())
+        val drone = deliveryOrderCustomRepository.findAllAvailableDronesToDelivery(totalWeight)
+        return if (drone.isNotEmpty())
             listOf(drone.first())
         else
             emptyList()
