@@ -11,7 +11,7 @@ import systems.ajax.motrechko.airguardian.model.Drone
 class DeliveryOrderMongoRepository(
     private val mongoTemplate: MongoTemplate,
 ) : DeliveryOrderCustomRepository {
-    override fun findAvailableDronesToDelivery(totalWeight: Double): List<Drone>? {
+    override fun findAllAvailableDronesToDelivery(totalWeight: Double): List<Drone> {
         val query = Query()
             .addCriteria(Criteria.where("status").`is`(DroneStatus.ACTIVE))
             .addCriteria(Criteria.where("loadCapacity").gte(totalWeight))
