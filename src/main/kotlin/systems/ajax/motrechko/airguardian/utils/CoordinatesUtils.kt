@@ -13,6 +13,7 @@ object CoordinatesUtils {
     private const val MIN_LONGITUDE = -180.0
     private const val MAX_LONGITUDE = 180.0
     private const val EARTH_RADIUS = 6371
+    private const val DEGREE_OF_LATITUDE_PER_KILOMETER = 111.32
 
     fun generateRandomCoordinates(): Coordinates {
         val randomLatitude = Random.nextDouble(MIN_LATITUDE, MAX_LATITUDE)
@@ -36,4 +37,23 @@ object CoordinatesUtils {
 
         return EARTH_RADIUS * c
     }
+
+    fun generateRandomCoordinatesWithinRange(
+        latitude: Double,
+        longitude: Double,
+        maxDistance: Double
+    ): Coordinates {
+        val maxLatitude = latitude + (maxDistance / DEGREE_OF_LATITUDE_PER_KILOMETER)
+        val minLatitude = latitude - (maxDistance / DEGREE_OF_LATITUDE_PER_KILOMETER)
+        val maxLongitude =
+            longitude + (maxDistance / (DEGREE_OF_LATITUDE_PER_KILOMETER * Math.cos(Math.toRadians(latitude))))
+        val minLongitude =
+            longitude - (maxDistance / (DEGREE_OF_LATITUDE_PER_KILOMETER * Math.cos(Math.toRadians(latitude))))
+
+        val randomLatitude = Random.nextDouble(minLatitude, maxLatitude)
+        val randomLongitude = Random.nextDouble(minLongitude, maxLongitude)
+
+        return Coordinates(randomLatitude, randomLongitude)
+    }
+
 }

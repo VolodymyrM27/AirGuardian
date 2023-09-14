@@ -1,23 +1,24 @@
-package systems.ajax.motrechko.airguardian.dto.request
+package systems.ajax.motrechko.airguardian.dto.response
 
 import systems.ajax.motrechko.airguardian.enums.DeliveryStatus
 import systems.ajax.motrechko.airguardian.model.Coordinates
 import systems.ajax.motrechko.airguardian.model.DeliveryItem
 import systems.ajax.motrechko.airguardian.model.DeliveryOrder
 
-data class OrderCreateRequest(
+data class DeliveryOrderResponse(
     val customerName: String = "",
     val deliveryAddress: String = "",
     val deliveryCoordinates: Coordinates,
-    val items: List<DeliveryItem> = emptyList(),
-    val status: DeliveryStatus = DeliveryStatus.PENDING
+    var items: List<DeliveryItem> = emptyList(),
+    var status: DeliveryStatus = DeliveryStatus.PENDING,
+    var deliveryDrone: List<DroneResponse> = emptyList()
 )
 
-fun OrderCreateRequest.toEntity() = DeliveryOrder(
+fun DeliveryOrder.toResponse() = DeliveryOrderResponse(
     customerName = customerName,
     deliveryAddress = deliveryAddress,
     deliveryCoordinates = deliveryCoordinates,
     items = items,
     status = status,
-    deliveryDrone = emptyList(),
+    deliveryDrone = deliveryDrone.toResponse()
 )
