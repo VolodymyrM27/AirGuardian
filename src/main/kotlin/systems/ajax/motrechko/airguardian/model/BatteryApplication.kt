@@ -1,8 +1,6 @@
 package systems.ajax.motrechko.airguardian.model
 
 data class BatteryApplication(
-    var serviceMessage: String = "",
-    var drone: Drone
+    val serviceMessage: String = "",
+    val drone: Drone
 )
-
-
