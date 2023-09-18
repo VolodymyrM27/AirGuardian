@@ -19,6 +19,7 @@ import systems.ajax.motrechko.airguardian.utils.CoordinatesUtils
 import java.time.LocalDateTime
 
 @Service
+@Suppress("TooManyFunctions")
 class DeliveryOrderService(
     private val deliveryOrderRepository: DeliveryOrderRepository,
     private val deliveryOrderCustomRepository: DeliveryOrderMongoRepository,
