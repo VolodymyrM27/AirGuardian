@@ -5,6 +5,7 @@ import systems.ajax.motrechko.airguardian.model.Drone
 
 interface DroneCustomRepository {
     fun updateDroneInfo(drone: Drone)
+
     fun findAllDronesWhereTheRemainingBatteryChargeIsLessThanAndHaveTheStatuses(
         batteryLevel: Double,
         statusesList: List<DroneStatus>

@@ -36,9 +36,9 @@ class DroneCustomMongoRepository(
         batteryLevel: Double,
         statusesList: List<DroneStatus>
     ): List<Drone> {
-        val query = Query()
-            .addCriteria(Criteria.where("batteryLevel").lte(batteryLevel))
-            .addCriteria(Criteria.where("status").`in`(statusesList))
+        val criteria = Criteria.where("batteryLevel").lte(batteryLevel)
+            .and("status").`in`(statusesList)
+        val query = Query(criteria)
         return mongoTemplate.find(query, Drone::class.java)
     }
 }
