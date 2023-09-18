@@ -23,7 +23,7 @@ data class DroneResponse(
 fun Drone.toResponse() = DroneResponse(
     id = id.toHexString(),
     model = model,
-    type = type,
+    type = type.toList(),
     speed = speed,
     weight = weight,
     numberOfPropellers = numberOfPropellers,
@@ -39,7 +39,7 @@ fun List<Drone>.toResponse(): List<DroneResponse> {
         DroneResponse(
             id = drone.id.toHexString(),
             model = drone.model,
-            type = drone.type,
+            type = drone.type.toList(),
             speed = drone.speed,
             weight = drone.weight,
             numberOfPropellers = drone.numberOfPropellers,
