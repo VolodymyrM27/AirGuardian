@@ -2,12 +2,15 @@ package systems.ajax.motrechko.airguardian.beanPostProcessor
 
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
-import java.util.*
-import kotlin.concurrent.fixedRateTimer
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
 @Component
 class MyScheduledBeanPostProcessor : BeanPostProcessor {
-    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
+    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
+        val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(SCHEDULED_THREADS_COUNT)
+
         val beanClass = bean.javaClass
         val methods = beanClass.methods
 
@@ -17,15 +20,13 @@ class MyScheduledBeanPostProcessor : BeanPostProcessor {
                 val delay = scheduledAnnotation.delay
                 val period = scheduledAnnotation.period
 
-                val timerTask = fixedRateTimer("MyScheduledTask", true, delay, period) {
-                    method.invoke(bean)
-                }
-
-                Runtime.getRuntime().addShutdownHook(Thread {
-                    timerTask.cancel()
-                })
+                scheduler.scheduleWithFixedDelay({ method.invoke(bean) }, delay, period, TimeUnit.MILLISECONDS)
             }
         }
         return bean
+    }
+
+    companion object{
+        private const val SCHEDULED_THREADS_COUNT = 10
     }
 }
