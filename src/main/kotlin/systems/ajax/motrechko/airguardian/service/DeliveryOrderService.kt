@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import systems.ajax.motrechko.airguardian.enums.DeliveryStatus
 import systems.ajax.motrechko.airguardian.enums.DroneStatus
+import systems.ajax.motrechko.airguardian.exception.DeliveryOrderNotFoundException
 import systems.ajax.motrechko.airguardian.model.Coordinates
 import systems.ajax.motrechko.airguardian.model.DeliveryItem
 import systems.ajax.motrechko.airguardian.model.DeliveryOrder
@@ -16,7 +17,6 @@ import systems.ajax.motrechko.airguardian.repository.DeliveryOrderRepository
 import systems.ajax.motrechko.airguardian.utils.BatteryCalculator
 import systems.ajax.motrechko.airguardian.utils.CoordinatesUtils
 import java.time.LocalDateTime
-import kotlin.time.Duration.Companion.minutes
 
 @Service
 class DeliveryOrderService(
@@ -70,7 +70,7 @@ class DeliveryOrderService(
         drone.flightHistory += createFlightRecord(currentTime, randomStartPosition, order.deliveryCoordinates)
         droneService.updateDroneInfo(drone)
 
-        order.deliveryDrone = listOf(drone)
+        order.deliveryDroneIDs += drone.id.toHexString()
         order.status = DeliveryStatus.IN_PROGRESS
     }
 
@@ -104,7 +104,11 @@ class DeliveryOrderService(
                 dronesForCategories.addAll(dronesForCategory)
             }
         }
-        return dronesForCategories
+
+        return if (dronesForCategories.size == items.size)
+            dronesForCategories
+        else
+            emptyList()
     }
 
     private fun createFlightRecord(
@@ -112,7 +116,7 @@ class DeliveryOrderService(
         startLocation: Coordinates,
         endLocation: Coordinates
     ): FlightRecord {
-        val endTime = startTime.plusMinutes(PLUG_DELIVERY_TIME)
+        val endTime = startTime.plusMinutes(PLUG_DELIVERY_TIME_MINUTES)
         val flightDistance = CoordinatesUtils.calculateFlightDistance(startLocation, endLocation)
 
         return FlightRecord(
@@ -121,12 +125,41 @@ class DeliveryOrderService(
             startLocation = startLocation,
             endLocation = endLocation,
             flightDistance = flightDistance,
-            flightDuration = PLUG_DELIVERY_TIME.minutes
+            flightDurationPerSeconds = PLUG_DELIVERY_TIME_MINUTES * SECONDS_PER_MINUTE
         )
     }
 
+    fun getInfoAboutOrderByID(id: String): DeliveryOrder {
+        return deliveryOrderRepository.findById(id)
+            .orElseThrow { DeliveryOrderNotFoundException("Order with $id not found") }
+    }
+
+    fun findDeliveryOrderByStatus(deliveryStatus: DeliveryStatus): List<DeliveryOrder> {
+        return deliveryOrderCustomRepository
+            .findOrderByStatus(deliveryStatus)
+    }
+
+    fun deleteByID(id: String) = deliveryOrderCustomRepository.deleteByID(id)
+
+    fun findAllOrdersByDroneID(droneID: String): List<DeliveryOrder> =
+        deliveryOrderCustomRepository.findOrdersByDroneId(droneID)
+
+    fun complete(id: String): DeliveryOrder {
+        val order = getInfoAboutOrderByID(id)
+        order.status = DeliveryStatus.DELIVERED
+        val drones = order.deliveryDroneIDs
+        drones.forEach {
+            val drone = droneService.getDroneById(it)
+            drone.status = DroneStatus.ACTIVE
+            droneService.updateDroneInfo(drone)
+        }
+        deliveryOrderCustomRepository.update(order)
+        return order
+    }
+
     companion object {
-        private const val PLUG_DELIVERY_TIME: Long = 30
+        private const val PLUG_DELIVERY_TIME_MINUTES: Long = 30
+        private const val SECONDS_PER_MINUTE: Long = 60
         private const val PLUG_MAX_RANGE_COORDINATES_IN_KILOMETERS: Double = 25.0
         private val logger: Logger = LoggerFactory.getLogger(DeliveryOrderService::class.java)
     }
