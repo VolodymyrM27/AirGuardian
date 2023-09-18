@@ -11,7 +11,7 @@ data class DeliveryOrderResponse(
     val deliveryCoordinates: Coordinates,
     var items: List<DeliveryItem> = emptyList(),
     var status: DeliveryStatus = DeliveryStatus.PENDING,
-    var deliveryDrone: List<DroneResponse> = emptyList()
+    var deliveryDrone: List<String> = emptyList()
 )
 
 fun DeliveryOrder.toResponse() = DeliveryOrderResponse(
@@ -20,5 +20,18 @@ fun DeliveryOrder.toResponse() = DeliveryOrderResponse(
     deliveryCoordinates = deliveryCoordinates,
     items = items,
     status = status,
-    deliveryDrone = deliveryDrone.toResponse()
+    deliveryDrone = deliveryDroneIDs
 )
+
+fun List<DeliveryOrder>.toResponse(): List<DeliveryOrderResponse> {
+    return this.map { deliveryOrder ->
+        DeliveryOrderResponse(
+            customerName = deliveryOrder.customerName,
+            deliveryAddress = deliveryOrder.deliveryAddress,
+            deliveryCoordinates =  deliveryOrder.deliveryCoordinates,
+            items = deliveryOrder.items.toList(),
+            status = deliveryOrder.status,
+            deliveryDrone = deliveryOrder.deliveryDroneIDs.toList()
+        )
+    }
+}
