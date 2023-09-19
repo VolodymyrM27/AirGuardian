@@ -55,5 +55,4 @@ object CoordinatesUtils {
 
         return Coordinates(randomLatitude, randomLongitude)
     }
-
 }
