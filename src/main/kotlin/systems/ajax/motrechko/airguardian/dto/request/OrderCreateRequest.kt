@@ -19,5 +19,5 @@ fun OrderCreateRequest.toEntity() = DeliveryOrder(
     deliveryCoordinates = deliveryCoordinates,
     items = items.toList(),
     status = status,
-    deliveryDroneIDs = emptyList(),
+    deliveryDroneIds = emptyList(),
 )

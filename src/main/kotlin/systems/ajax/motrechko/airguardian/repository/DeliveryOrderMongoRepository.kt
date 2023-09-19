@@ -36,12 +36,12 @@ class DeliveryOrderMongoRepository(
     }
 
     override fun findOrdersByDroneId(droneID: String): List<DeliveryOrder> {
-        val query = Query(Criteria.where("deliveryDroneIDs").`in`(droneID))
+        val query = Query(Criteria.where("deliveryDroneIds").`in`(droneID))
         return mongoTemplate.find(query, DeliveryOrder::class.java)
     }
 
     override fun findOrdersByUserId(userID: String): List<DeliveryOrder> {
-        val query = Query(Criteria.where("deliveryDroneIDs").`in`(userID))
+        val query = Query(Criteria.where("deliveryDroneIds").`in`(userID))
         return mongoTemplate.find(query, DeliveryOrder::class.java)
     }
 
@@ -54,7 +54,7 @@ class DeliveryOrderMongoRepository(
             .set("status", order.status)
             .set("deliveryAddress", order.deliveryAddress)
             .set("deliveryCoordinates", order.deliveryCoordinates)
-            .set("deliveryDroneIDs", order.deliveryDroneIDs)
+            .set("deliveryDroneIds", order.deliveryDroneIds)
         mongoTemplate.updateFirst(query, update, DeliveryOrder::class.java)
     }
 }

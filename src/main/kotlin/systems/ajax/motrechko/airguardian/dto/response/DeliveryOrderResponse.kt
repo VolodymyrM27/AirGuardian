@@ -20,7 +20,7 @@ fun DeliveryOrder.toResponse() = DeliveryOrderResponse(
     deliveryCoordinates = deliveryCoordinates,
     items = items,
     status = status,
-    deliveryDrone = deliveryDroneIDs
+    deliveryDrone = deliveryDroneIds
 )
 
 fun List<DeliveryOrder>.toResponse(): List<DeliveryOrderResponse> {
@@ -31,7 +31,7 @@ fun List<DeliveryOrder>.toResponse(): List<DeliveryOrderResponse> {
             deliveryCoordinates =  deliveryOrder.deliveryCoordinates,
             items = deliveryOrder.items.toList(),
             status = deliveryOrder.status,
-            deliveryDrone = deliveryOrder.deliveryDroneIDs.toList()
+            deliveryDrone = deliveryOrder.deliveryDroneIds.toList()
         )
     }
 }
