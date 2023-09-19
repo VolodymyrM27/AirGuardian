@@ -1,19 +1,21 @@
 package systems.ajax.motrechko.airguardian.beanPostProcessor
 
+import org.springframework.aop.framework.AopProxyUtils
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
 @Component
+@Order(Ordered.LOWEST_PRECEDENCE)
 class MyScheduledBeanPostProcessor : BeanPostProcessor {
-    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
-        val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(SCHEDULED_THREADS_COUNT)
-
-        val beanClass = bean.javaClass
+    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
+        val beanClass = AopProxyUtils.ultimateTargetClass(bean)
         val methods = beanClass.methods
-
+        val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(SCHEDULED_THREADS_COUNT)
         for (method in methods) {
             if (method.isAnnotationPresent(MyScheduled::class.java)) {
                 val scheduledAnnotation = method.getAnnotation(MyScheduled::class.java)
@@ -26,7 +28,7 @@ class MyScheduledBeanPostProcessor : BeanPostProcessor {
         return bean
     }
 
-    companion object{
+    companion object {
         private const val SCHEDULED_THREADS_COUNT = 10
     }
 }
