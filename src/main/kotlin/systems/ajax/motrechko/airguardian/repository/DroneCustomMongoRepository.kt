@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import org.springframework.stereotype.Repository
+import systems.ajax.motrechko.airguardian.enums.DroneStatus
 import systems.ajax.motrechko.airguardian.model.Drone
 
 @Repository
@@ -29,5 +30,15 @@ class DroneCustomMongoRepository(
             .set("maxFlightAltitude", drone.maxFlightAltitude)
 
         mongoTemplate.updateFirst(query, update, Drone::class.java)
+    }
+
+    override fun findAllDronesWhereTheRemainingBatteryChargeIsLessThanAndHaveTheStatuses(
+        batteryLevel: Double,
+        statusesList: List<DroneStatus>
+    ): List<Drone> {
+        val criteria = Criteria.where("batteryLevel").lte(batteryLevel)
+            .and("status").`in`(statusesList)
+        val query = Query(criteria)
+        return mongoTemplate.find(query, Drone::class.java)
     }
 }

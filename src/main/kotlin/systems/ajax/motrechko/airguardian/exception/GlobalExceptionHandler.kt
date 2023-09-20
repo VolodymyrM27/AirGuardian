@@ -12,8 +12,8 @@ import java.time.LocalDateTime
 @ControllerAdvice
 class GlobalExceptionHandler {
 
-    @ExceptionHandler(DroneNotFoundException::class)
-    fun droneNotFound(request: HttpServletRequest, exception: DroneNotFoundException): ResponseEntity<ApiError> {
+    @ExceptionHandler(value = [DroneNotFoundException::class, DeliveryOrderNotFoundException::class])
+    fun notFoundException(request: HttpServletRequest, exception: Exception): ResponseEntity<ApiError> {
         val errorDetail = ApiError(
             path = request.requestURI,
             message = exception.message,

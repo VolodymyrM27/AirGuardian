@@ -19,6 +19,8 @@ data class DroneCreateRequest(
     val numberOfPropellers: Int,
     @field:Min(value = 0, message = "Load Capacity must be at least 0")
     val loadCapacity: Double,
+    @field:Min(value = 0, message = "cost must be at least 0")
+    val cost: Double,
     val status: DroneStatus,
     @field:Min(value = 0, message = "Battery level must be at least 0")
     val batteryLevel: Double,
@@ -29,11 +31,12 @@ data class DroneCreateRequest(
 
 fun DroneCreateRequest.toEntity() = Drone(
     model = model,
-    type = type,
+    type = type.toList(),
     speed = speed,
     weight = weight,
     numberOfPropellers = numberOfPropellers,
     loadCapacity = loadCapacity,
+    cost = cost,
     status = status,
     batteryLevel = batteryLevel,
     size = size,
