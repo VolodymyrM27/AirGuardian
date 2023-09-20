@@ -3,7 +3,7 @@ spring:
     mongodb:
       database: drone
       port: 27017
-      host: localhost
+      host: airguardian-mongodb-1
       password: secret
       username: root
       authentication-database: admin

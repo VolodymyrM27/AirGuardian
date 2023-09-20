@@ -33,6 +33,19 @@ class DroneLogisticsService(
         return findDronesForCategories(items)
     }
 
+    fun initializeOrderForDelivery(order: DeliveryOrder, drones: List<Drone>) {
+        val currentTime = LocalDateTime.now()
+        val randomStartPosition = CoordinatesUtils.generateRandomCoordinatesWithinRange(
+            order.deliveryCoordinates.latitude,
+            order.deliveryCoordinates.longitude,
+            PLUG_MAX_RANGE_COORDINATES_IN_KILOMETERS
+        )
+
+        drones.forEach { drone ->
+            initializeDroneForDelivery(drone, order, currentTime, randomStartPosition)
+        }
+    }
+
     private fun findDronesForTotalCargo(totalWeight: Double): List<Drone> {
         val drone = deliveryOrderCustomRepository.findAllAvailableDronesToDelivery(totalWeight)
         return if (drone.isNotEmpty())
@@ -56,19 +69,6 @@ class DroneLogisticsService(
             dronesForCategories
         else
             emptyList()
-    }
-
-    fun initializeOrderForDelivery(order: DeliveryOrder, drones: List<Drone>) {
-        val currentTime = LocalDateTime.now()
-        val randomStartPosition = CoordinatesUtils.generateRandomCoordinatesWithinRange(
-            order.deliveryCoordinates.latitude,
-            order.deliveryCoordinates.longitude,
-            PLUG_MAX_RANGE_COORDINATES_IN_KILOMETERS
-        )
-
-        drones.forEach { drone ->
-            initializeDroneForDelivery(drone, order, currentTime, randomStartPosition)
-        }
     }
 
     private fun initializeDroneForDelivery(
