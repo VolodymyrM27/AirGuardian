@@ -1,9 +1,10 @@
-name: Detekt-Actions
+name: Checks
 
 on:
+  push:
+    branches: ["main"]
   pull_request:
-    branches:
-      - main
+    branches: '*'
 
 jobs:
   detekt:
@@ -22,5 +23,5 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build and run detekt
-        run: ./gradlew detekt
+      - name: compile + run all checks
+        run: ./gradlew build
