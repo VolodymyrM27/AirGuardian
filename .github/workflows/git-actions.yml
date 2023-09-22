@@ -7,7 +7,7 @@ on:
     branches: '*'
 
 jobs:
-  detekt:
+  checks:
     runs-on: ubuntu-latest
 
     steps:
