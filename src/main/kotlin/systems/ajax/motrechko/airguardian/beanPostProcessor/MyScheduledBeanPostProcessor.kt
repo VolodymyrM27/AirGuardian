@@ -12,16 +12,16 @@ import java.util.concurrent.TimeUnit
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 class MyScheduledBeanPostProcessor : BeanPostProcessor {
+    private val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(SCHEDULED_THREADS_COUNT)
+
     override fun postProcessAfterInitialization(bean: Any, beanName: String): Any? {
         val beanClass = AopProxyUtils.ultimateTargetClass(bean)
         val methods = beanClass.methods
-        val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(SCHEDULED_THREADS_COUNT)
         for (method in methods) {
             if (method.isAnnotationPresent(MyScheduled::class.java)) {
                 val scheduledAnnotation = method.getAnnotation(MyScheduled::class.java)
                 val delay = scheduledAnnotation.delay
                 val period = scheduledAnnotation.period
-
                 scheduler.scheduleWithFixedDelay({ method.invoke(bean) }, delay, period, TimeUnit.MILLISECONDS)
             }
         }
