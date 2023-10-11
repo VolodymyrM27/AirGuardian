@@ -3,6 +3,7 @@ package systems.ajax.motrechko.airguardian.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import systems.ajax.motrechko.airguardian.enums.DeliveryStatus
 import systems.ajax.motrechko.airguardian.enums.DroneStatus
 import systems.ajax.motrechko.airguardian.model.Coordinates
@@ -10,7 +11,7 @@ import systems.ajax.motrechko.airguardian.model.DeliveryItem
 import systems.ajax.motrechko.airguardian.model.DeliveryOrder
 import systems.ajax.motrechko.airguardian.model.Drone
 import systems.ajax.motrechko.airguardian.model.getTotalWeight
-import systems.ajax.motrechko.airguardian.repository.DeliveryOrderMongoRepository
+import systems.ajax.motrechko.airguardian.repository.DeliveryOrderMongoReactiveRepository
 import systems.ajax.motrechko.airguardian.utils.BatteryCalculator
 import systems.ajax.motrechko.airguardian.utils.CoordinatesUtils
 import systems.ajax.motrechko.airguardian.utils.FlightRecordUtils
@@ -18,19 +19,21 @@ import java.time.LocalDateTime
 
 @Service
 class DroneLogisticsService(
-    private val deliveryOrderCustomRepository: DeliveryOrderMongoRepository,
+    private val deliveryOrderCustomRepository: DeliveryOrderMongoReactiveRepository,
     private val droneService: DroneService
 ) {
-    fun findAvailableDrones(items: List<DeliveryItem>): List<Drone> {
+    fun findAvailableDrones(items: List<DeliveryItem>): Flux<Drone> {
         val totalWeight = items.getTotalWeight()
         logger.debug("total weight of items {}", totalWeight)
-        val dronesForTotalCargo = findDronesForTotalCargo(totalWeight)
 
-        if (dronesForTotalCargo.isNotEmpty()) {
-            return dronesForTotalCargo
-        }
+        val droneForTotalCargo: Flux<Drone> =
+            findDronesByWeightCargo(totalWeight)
+                .next()
+                .flux()
+        val dronesForCategories: Flux<Drone> = findDronesForCategories(items)
 
-        return findDronesForCategories(items)
+        return droneForTotalCargo
+            .switchIfEmpty(dronesForCategories)
     }
 
     fun initializeOrderForDelivery(order: DeliveryOrder, drones: List<Drone>) {
@@ -46,29 +49,20 @@ class DroneLogisticsService(
         }
     }
 
-    private fun findDronesForTotalCargo(totalWeight: Double): List<Drone> {
-        val drone = deliveryOrderCustomRepository.findAllAvailableDronesToDelivery(totalWeight)
-        return if (drone.isNotEmpty())
-            listOf(drone.first())
-        else
-            emptyList()
+    private fun findDronesByWeightCargo(totalWeight: Double): Flux<Drone> {
+        return deliveryOrderCustomRepository
+            .findAllAvailableDronesToDelivery(totalWeight)
+            .switchIfEmpty(Flux.empty())
     }
 
-    private fun findDronesForCategories(items: List<DeliveryItem>): List<Drone> {
-        val dronesForCategories = mutableListOf<Drone>()
+    private fun findDronesForCategories(items: List<DeliveryItem>): Flux<Drone> {
+        val dronesForCategories: List<Flux<Drone>> =
+            items.map { item -> findDronesByWeightCargo(item.weight).next().flux() }
 
-        for (item in items) {
-            val dronesForCategory = findDronesForTotalCargo(item.weight)
-
-            if (dronesForCategory.isNotEmpty()) {
-                dronesForCategories.addAll(dronesForCategory)
-            }
-        }
-
-        return if (dronesForCategories.size == items.size)
-            dronesForCategories
+        return if (dronesForCategories.size >= items.size)
+            Flux.concat(dronesForCategories) //todo take drone as much as u need
         else
-            emptyList()
+            Flux.empty()
     }
 
     private fun initializeDroneForDelivery(
@@ -83,21 +77,30 @@ class DroneLogisticsService(
         logger.debug("battery Consumption for delivery is {}", batteryConsumption)
         logger.debug("distance for delivery is {}", distance)
 
-        drone.status = DroneStatus.BUSY
-        drone.batteryLevel -= batteryConsumption
-        drone.flightHistory += FlightRecordUtils.createFlightRecord(
-            currentTime,
-            randomStartPosition,
-            order.deliveryCoordinates
-        )
+        drone.apply {
+            status = DroneStatus.BUSY
+            batteryLevel -= batteryConsumption
+            flightHistory += FlightRecordUtils.createFlightRecord(
+                currentTime,
+                randomStartPosition,
+                order.deliveryCoordinates
+            )
+        }
         droneService.updateDroneInfo(drone)
-
-        order.deliveryDroneIds += drone.id.toHexString()
-        order.status = DeliveryStatus.IN_PROGRESS
+            .subscribe(
+                { updatedDrone ->
+                    order.deliveryDroneIds += updatedDrone.id.toHexString()
+                    order.status = DeliveryStatus.IN_PROGRESS
+                },
+                { error ->
+                    logger.error("Error updating drone data: ${error.message}")
+                }
+            )
     }
 
-    companion object{
-        private const val PLUG_MAX_RANGE_COORDINATES_IN_KILOMETERS: Double = 25.0
+    companion object {
+        private const val PLUG_MAX_RANGE_COORDINATES_IN_KILOMETERS: Double = 40.0
         private val logger: Logger = LoggerFactory.getLogger(DroneLogisticsService::class.java)
     }
 }
+
