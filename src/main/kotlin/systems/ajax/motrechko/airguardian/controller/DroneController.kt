@@ -1,14 +1,17 @@
 package systems.ajax.motrechko.airguardian.controller
 
 import jakarta.validation.Valid
-import org.springframework.http.ResponseEntity
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import systems.ajax.motrechko.airguardian.dto.request.DroneCreateRequest
 import systems.ajax.motrechko.airguardian.dto.request.StatusRequest
 import systems.ajax.motrechko.airguardian.dto.request.toEntity
@@ -23,29 +26,25 @@ class DroneController(
     private val droneService: DroneService
 ) {
     @GetMapping
-    fun getAllDrone(): ResponseEntity<List<DroneResponse>> = ResponseEntity.ok(
-        droneService.getAllDrones().toResponse()
-    )
+    fun getAllDrone(): Flux<DroneResponse> =
+        droneService.getAllDrones().map { it.toResponse() }
+
 
     @GetMapping("/status")
-    fun getAllDroneByStatus(@RequestBody droneStatus: StatusRequest): ResponseEntity<List<DroneResponse>> =
-        ResponseEntity.ok(droneService.findDroneByStatus(DroneStatus.valueOf(droneStatus.status)).toResponse())
+    fun getAllDroneByStatus(@RequestBody droneStatus: StatusRequest): Flux<DroneResponse> =
+        droneService.findDroneByStatus(DroneStatus.valueOf(droneStatus.status)).map { it.toResponse() }
 
     @GetMapping("/{id}")
-    fun getDroneById(@PathVariable id: String): ResponseEntity<DroneResponse> = ResponseEntity.ok(
-        droneService.getDroneById(id).toResponse()
-    )
+    fun getDroneById(@PathVariable id: String): Mono<DroneResponse> =
+        droneService.getDroneById(id).map { it.toResponse() }
 
+    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}")
-    fun deleteDroneById(@PathVariable id: String): ResponseEntity<Unit> =
-        droneService.deleteDroneById(id)
-            .run { ResponseEntity.noContent().build() }
+    fun deleteDroneById(@PathVariable id: String): Mono<Unit> = droneService.deleteDroneById(id)
+
 
     @PostMapping
     fun createDrone(
         @Valid @RequestBody droneCreateRequest: DroneCreateRequest
-    ): ResponseEntity<DroneResponse> {
-        val drone = droneService.createDrone(droneCreateRequest.toEntity())
-        return ResponseEntity.ok(drone.toResponse())
-    }
+    ): Mono<DroneResponse> = droneService.createDrone(droneCreateRequest.toEntity()).map { it.toResponse() }
 }
