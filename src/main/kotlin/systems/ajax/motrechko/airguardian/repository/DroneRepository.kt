@@ -1,6 +1,7 @@
 package systems.ajax.motrechko.airguardian.repository
 
 import com.mongodb.bulk.BulkWriteResult
+import com.mongodb.client.result.UpdateResult
 import org.springframework.data.mongodb.core.BulkOperations
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
@@ -36,7 +37,7 @@ class DroneRepository(
             .bulkOps(BulkOperations.BulkMode.ORDERED, Drone::class.java)
 
         dronesIds.forEach { droneId ->
-            val query = Query(Criteria.where("id").`is`(droneId))
+            val query = Query(Criteria.where("_id").`is`(droneId))
             val update = Update().apply {
                 set("status", newStatus)
             }
@@ -44,5 +45,13 @@ class DroneRepository(
         }
 
         return bulkOperations.execute()
+    }
+
+    override fun updateDroneStatus(droneId: String, newStatus: DroneStatus): Mono<UpdateResult> {
+        val query = Query(Criteria.where("_id").`is`(droneId))
+        val update = Update().apply {
+            set("status", newStatus)
+        }
+        return reactiveMongoTemplate.updateFirst(query, update, Drone::class.java )
     }
 }

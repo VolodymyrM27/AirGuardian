@@ -1,6 +1,7 @@
 package systems.ajax.motrechko.airguardian.repository
 
 import com.mongodb.bulk.BulkWriteResult
+import com.mongodb.client.result.UpdateResult
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import systems.ajax.motrechko.airguardian.enums.DroneStatus
@@ -15,4 +16,6 @@ interface DroneCustomReactiveRepository {
     fun findByStatus (droneStatus: DroneStatus): Flux<Drone>
 
     fun updateManyDronesStatus(dronesIds: List<String>, newStatus: DroneStatus): Mono<BulkWriteResult>
+
+    fun updateDroneStatus(droneId: String, newStatus: DroneStatus): Mono<UpdateResult>
 }

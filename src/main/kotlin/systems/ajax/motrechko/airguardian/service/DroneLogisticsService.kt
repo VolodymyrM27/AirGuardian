@@ -12,6 +12,7 @@ import systems.ajax.motrechko.airguardian.model.DeliveryOrder
 import systems.ajax.motrechko.airguardian.model.Drone
 import systems.ajax.motrechko.airguardian.model.getTotalWeight
 import systems.ajax.motrechko.airguardian.repository.DeliveryOrderMongoReactiveRepository
+import systems.ajax.motrechko.airguardian.repository.DroneRepository
 import systems.ajax.motrechko.airguardian.utils.BatteryCalculator
 import systems.ajax.motrechko.airguardian.utils.CoordinatesUtils
 import systems.ajax.motrechko.airguardian.utils.FlightRecordUtils
@@ -20,7 +21,8 @@ import java.time.LocalDateTime
 @Service
 class DroneLogisticsService(
     private val deliveryOrderCustomRepository: DeliveryOrderMongoReactiveRepository,
-    private val droneService: DroneService
+    private val droneService: DroneService,
+    private val droneRepository: DroneRepository
 ) {
     fun findAvailableDrones(items: List<DeliveryItem>): Flux<Drone> {
         val totalWeight = items.getTotalWeight()
@@ -30,10 +32,9 @@ class DroneLogisticsService(
             findDronesByWeightCargo(totalWeight)
                 .next()
                 .flux()
-        val dronesForCategories: Flux<Drone> = findDronesForCategories(items)
 
         return droneForTotalCargo
-            .switchIfEmpty(dronesForCategories)
+            .switchIfEmpty(findDronesForCategories(items))
     }
 
     fun initializeOrderForDelivery(order: DeliveryOrder, drones: List<Drone>) {
@@ -56,14 +57,34 @@ class DroneLogisticsService(
     }
 
     private fun findDronesForCategories(items: List<DeliveryItem>): Flux<Drone> {
-        val dronesForCategories: List<Flux<Drone>> =
-            items.map { item -> findDronesByWeightCargo(item.weight).next().flux() }
-
-        return if (dronesForCategories.size >= items.size)
-            Flux.concat(dronesForCategories) //todo take drone as much as u need
-        else
-            Flux.empty()
+       return Flux.fromIterable(items)
+            .flatMap {
+                findAndBookDrone(it)
+            }
+            .collectList()
+            .flatMapMany {
+                if(it.size == items.size) {
+                    Flux.fromIterable(it)
+                } else {
+                    rollbackSelectionDrones(it)
+                }
+            }
     }
+
+    private fun findAndBookDrone(it: DeliveryItem) =
+        findDronesByWeightCargo(it.weight).next()
+        .flatMap { drone ->
+            droneRepository.updateDroneStatus(drone.id.toHexString(), DroneStatus.IN_SELECTION)
+                .thenReturn(drone)
+        }
+
+    private fun rollbackSelectionDrones(it: MutableList<Drone>): Flux<Drone> =
+        Flux.fromIterable(it)
+            .filter { it.status == DroneStatus.IN_SELECTION }
+            .map { it.id.toHexString() }
+            .collectList()
+            .flatMap { droneRepository.updateManyDronesStatus(it, DroneStatus.ACTIVE) }
+            .thenMany(Flux.empty())
 
     private fun initializeDroneForDelivery(
         drone: Drone,

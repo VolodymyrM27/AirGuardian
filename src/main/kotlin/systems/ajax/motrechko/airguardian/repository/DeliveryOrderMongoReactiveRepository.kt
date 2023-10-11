@@ -1,6 +1,7 @@
 package systems.ajax.motrechko.airguardian.repository
 
 import com.mongodb.client.result.UpdateResult
+import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -21,6 +22,8 @@ class DeliveryOrderMongoReactiveRepository(
         val query = Query()
             .addCriteria(Criteria.where("status").`is`(DroneStatus.ACTIVE))
             .addCriteria(Criteria.where("loadCapacity").gte(totalWeight))
+            .with(Sort.by(Sort.Direction.ASC, "loadCapacity"))
+
         return reactiveMongoTemplate.find(query, Drone::class.java)
     }
 

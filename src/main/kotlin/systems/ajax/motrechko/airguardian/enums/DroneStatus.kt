@@ -5,5 +5,6 @@ enum class DroneStatus {
     ACTIVE,
     CHARGING,
     NEED_TO_CHARGE,
-    BUSY
+    BUSY,
+    IN_SELECTION
 }
