@@ -13,7 +13,7 @@ interface DroneCustomReactiveRepository {
         statusesList: List<DroneStatus>
     ): Flux<Drone>
 
-    fun findByStatus (droneStatus: DroneStatus): Flux<Drone>
+    fun findAllByStatus (droneStatus: DroneStatus): Flux<Drone>
 
     fun updateManyDronesStatus(dronesIds: List<String>, newStatus: DroneStatus): Mono<BulkWriteResult>
 
