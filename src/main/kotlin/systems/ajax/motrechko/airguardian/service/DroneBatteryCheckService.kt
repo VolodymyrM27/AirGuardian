@@ -4,6 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import systems.ajax.motrechko.airguardian.beanPostProcessor.MyScheduled
 import systems.ajax.motrechko.airguardian.enums.DroneStatus
 import systems.ajax.motrechko.airguardian.model.Drone
@@ -22,18 +23,20 @@ class DroneBatteryCheckService(
             )
 
         dronesFlux
-            .doOnNext { createApplicationForCharging(it) }
+            .flatMap { createApplicationForCharging(it) }
             .doOnComplete { logger.info("No drones found to charge") }
             .subscribe()
     }
 
-    private fun createApplicationForCharging(drone: Drone) {
-        logger.info(
-            "A request has been received to charge a drone with an ID {}, which is now has {}%",
-            drone.id, drone.batteryLevel
-        )
+    private fun createApplicationForCharging(drone: Drone): Mono<Unit> {
         drone.status = DroneStatus.NEED_TO_CHARGE
-        droneMongoRepository.save(drone)
+        return droneMongoRepository.save(drone)
+            .doOnSuccess{   logger.info(
+                "A request has been received to charge a drone with an ID {}, which is now has {}%",
+                drone.id, drone.batteryLevel
+            )}
+            .thenReturn(Unit)
+
         //TODO("implement a real application if it is needed in the future")
     }
 
