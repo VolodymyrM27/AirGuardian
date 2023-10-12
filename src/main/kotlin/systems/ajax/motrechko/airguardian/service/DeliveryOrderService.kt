@@ -26,10 +26,8 @@ class DeliveryOrderService(
             .collectList()
             .flatMap { availableDrones ->
                 if (availableDrones.isNotEmpty()) {
-                    println("!!!!!SwitchIfEmpty but in if")
                     initializeOrderForDeliveryAndSave(order, availableDrones)
                 } else {
-                    println("SwitchIfEmpty but in if")
                     setWaitingStatusAndSave(order)
                 }
             }
@@ -62,9 +60,7 @@ class DeliveryOrderService(
 
     private fun setWaitingStatusAndSave(order: DeliveryOrder): Mono<DeliveryOrder> {
        return Mono.defer {
-           println("From SwitchIfEmpty")
            order.status = DeliveryStatus.WAITING_AVAILABLE_DRONES
-           println("$order")
            deliveryOrderRepository.save(order)
                .thenReturn(order)
                .doOnSuccess { logger.info("no free drones were found for prayer with id {}", order.id) }
@@ -77,7 +73,6 @@ class DeliveryOrderService(
     ): Mono<DeliveryOrder> {
         return droneLogisticsService.initializeOrderForDelivery(order, availableDrones)
             .flatMap {
-                println(order)
                 deliveryOrderRepository.save(order)
             }
             .doOnSuccess {

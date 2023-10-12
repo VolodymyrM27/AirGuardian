@@ -69,7 +69,6 @@ class DroneLogisticsService(
             }
             .collectList()
             .flatMapMany {
-                println("${it.size} == ${items.size}")
                 if(it.size == items.size) {
                     Flux.fromIterable(it)
                 } else if(it.isNotEmpty()){
