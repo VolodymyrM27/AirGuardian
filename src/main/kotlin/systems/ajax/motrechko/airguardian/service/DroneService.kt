@@ -21,15 +21,17 @@ class DroneService(
 
     fun deleteDroneById(id: String): Mono<Unit> {
         return droneRepository
-            .findById(id)
-            .switchIfEmpty(Mono.error(DroneNotFoundException("Drone with id $id not found")))
-            .flatMap {
-                droneRepository.deleteById(id)
+            .deleteById(id)
+            .flatMap { deletedResult ->
+                if (deletedResult.deletedCount > 0) {
+                    Mono.just(Unit)
+                } else {
+                    Mono.error(DroneNotFoundException("Drone with id $id not found"))
+                }
             }
-            .then(Mono.empty())
     }
 
-    fun findDroneByStatus(droneStatus: DroneStatus): Flux<Drone> = droneRepository.findByStatus(droneStatus)
+    fun findDroneByStatus(droneStatus: DroneStatus): Flux<Drone> = droneRepository.findAllByStatus(droneStatus)
 
     fun updateDroneInfo(drone: Drone): Mono<Drone> = this.createDrone(drone)
 }
