@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PostMapping
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import systems.ajax.motrechko.airguardian.dto.request.DroneCreateRequest
 import systems.ajax.motrechko.airguardian.dto.request.StatusRequest
@@ -26,13 +25,12 @@ class DroneController(
     private val droneService: DroneService
 ) {
     @GetMapping
-    fun getAllDrone(): Flux<DroneResponse> =
-        droneService.getAllDrones().map { it.toResponse() }
-
+    fun getAllDrone(): Mono<List<DroneResponse>> =
+        droneService.getAllDrones()
 
     @GetMapping("/status")
-    fun getAllDroneByStatus(@RequestBody droneStatus: StatusRequest): Flux<DroneResponse> =
-        droneService.findDroneByStatus(DroneStatus.valueOf(droneStatus.status)).map { it.toResponse() }
+    fun getAllDroneByStatus(@RequestBody droneStatus: StatusRequest): Mono<List<DroneResponse>> =
+        droneService.findDroneByStatus(DroneStatus.valueOf(droneStatus.status))
 
     @GetMapping("/{id}")
     fun getDroneById(@PathVariable id: String): Mono<DroneResponse> =
@@ -41,7 +39,6 @@ class DroneController(
     @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}")
     fun deleteDroneById(@PathVariable id: String): Mono<Unit> = droneService.deleteDroneById(id)
-
 
     @PostMapping
     fun createDrone(

@@ -1,8 +1,9 @@
 package systems.ajax.motrechko.airguardian.service
 
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import systems.ajax.motrechko.airguardian.dto.response.DroneResponse
+import systems.ajax.motrechko.airguardian.dto.response.toResponse
 import systems.ajax.motrechko.airguardian.enums.DroneStatus
 import systems.ajax.motrechko.airguardian.exception.DroneNotFoundException
 import systems.ajax.motrechko.airguardian.model.Drone
@@ -12,7 +13,10 @@ import systems.ajax.motrechko.airguardian.repository.DroneRepository
 class DroneService(
     private val droneRepository: DroneRepository
 ) {
-    fun getAllDrones(): Flux<Drone> = droneRepository.findAll()
+    fun getAllDrones(): Mono<List<DroneResponse>> = droneRepository
+        .findAll()
+        .collectList()
+        .map { drones -> drones.map { it.toResponse() } }
 
     fun getDroneById(id: String): Mono<Drone> =
         droneRepository.findById(id).switchIfEmpty(Mono.error(DroneNotFoundException("Drone with id $id not found")))
@@ -31,7 +35,10 @@ class DroneService(
             }
     }
 
-    fun findDroneByStatus(droneStatus: DroneStatus): Flux<Drone> = droneRepository.findAllByStatus(droneStatus)
+    fun findDroneByStatus(droneStatus: DroneStatus): Mono<List<DroneResponse>> =
+        droneRepository.findAllByStatus(droneStatus)
+            .collectList()
+            .map { drones -> drones.map { it.toResponse() } }
 
     fun updateDroneInfo(drone: Drone): Mono<Drone> = this.createDrone(drone)
 }

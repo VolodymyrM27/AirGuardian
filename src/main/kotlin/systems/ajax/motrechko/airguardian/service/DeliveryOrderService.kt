@@ -3,8 +3,9 @@ package systems.ajax.motrechko.airguardian.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import systems.ajax.motrechko.airguardian.dto.response.DeliveryOrderResponse
+import systems.ajax.motrechko.airguardian.dto.response.toResponse
 import systems.ajax.motrechko.airguardian.enums.DeliveryStatus
 import systems.ajax.motrechko.airguardian.enums.DroneStatus
 import systems.ajax.motrechko.airguardian.exception.DeliveryOrderNotFoundException
@@ -36,13 +37,17 @@ class DeliveryOrderService(
     fun getInfoAboutOrderByID(id: String): Mono<DeliveryOrder> = deliveryOrderRepository.findById(id)
         .switchIfEmpty(Mono.error(DeliveryOrderNotFoundException("Order with $id not found")))
 
-    fun findAllDeliveryOrdersByStatus(deliveryStatus: DeliveryStatus): Flux<DeliveryOrder> =
+    fun findAllDeliveryOrdersByStatus(deliveryStatus: DeliveryStatus): Mono<List<DeliveryOrderResponse>> =
         deliveryOrderCustomRepository.findOrderByStatus(deliveryStatus)
+            .collectList()
+            .map { orders -> orders.map { it.toResponse() } }
 
     fun deleteByID(id: String) = deliveryOrderCustomRepository.deleteByID(id)
 
-    fun findAllOrdersByDroneID(droneID: String): Flux<DeliveryOrder> =
-        deliveryOrderCustomRepository.findOrdersByDroneId(droneID)
+    fun findAllOrdersByDroneID(droneID: String): Mono<List<DeliveryOrder>> =
+        deliveryOrderCustomRepository
+            .findOrdersByDroneId(droneID)
+            .collectList()
 
     fun complete(id: String): Mono<DeliveryOrder> {
         return getInfoAboutOrderByID(id)
