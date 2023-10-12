@@ -38,7 +38,7 @@ class DeliveryController(
     fun findAllDeliveryOrderByStatus(
         @RequestBody deliveryStatus: StatusRequest
     ): Flux<DeliveryOrderResponse> =
-        deliveryOrderService.findDeliveryOrderByStatus(DeliveryStatus.valueOf(deliveryStatus.status))
+        deliveryOrderService.findAllDeliveryOrdersByStatus(DeliveryStatus.valueOf(deliveryStatus.status))
             .map { it.toResponse() }
 
     @ResponseStatus(HttpStatus.OK)
