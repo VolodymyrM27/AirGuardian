@@ -4,6 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import systems.ajax.motrechko.airguardian.enums.DeliveryStatus
 import systems.ajax.motrechko.airguardian.enums.DroneStatus
 import systems.ajax.motrechko.airguardian.model.Coordinates
@@ -37,7 +38,7 @@ class DroneLogisticsService(
             .switchIfEmpty(findDronesForCategories(items))
     }
 
-    fun initializeOrderForDelivery(order: DeliveryOrder, drones: List<Drone>) {
+    fun initializeOrderForDelivery(order: DeliveryOrder, drones: List<Drone>): Mono<DeliveryOrder> {
         val currentTime = LocalDateTime.now()
         val randomStartPosition = CoordinatesUtils.generateRandomCoordinatesWithinRange(
             order.deliveryCoordinates.latitude,
@@ -45,16 +46,21 @@ class DroneLogisticsService(
             PLUG_MAX_RANGE_COORDINATES_IN_KILOMETERS
         )
 
-        drones.forEach { drone ->
-            initializeDroneForDelivery(drone, order, currentTime, randomStartPosition)
-        }
+        return Flux.fromIterable(drones)
+            .flatMap { drone ->
+                initializeDroneForDelivery(drone, order, currentTime, randomStartPosition)
+            }
+            .collectList()
+            .doOnNext { updatedDrones ->
+                order.deliveryDroneIds += updatedDrones.map { it.id.toHexString() }
+                order.status = DeliveryStatus.IN_PROGRESS
+            }
+            .thenReturn(order)
     }
 
-    private fun findDronesByWeightCargo(totalWeight: Double): Flux<Drone> {
-        return deliveryOrderCustomRepository
-            .findAllAvailableDronesToDelivery(totalWeight)
-            .switchIfEmpty(Flux.empty())
-    }
+
+    private fun findDronesByWeightCargo(totalWeight: Double): Flux<Drone> =
+         deliveryOrderCustomRepository.findAllAvailableDronesToDelivery(totalWeight)
 
     private fun findDronesForCategories(items: List<DeliveryItem>): Flux<Drone> {
        return Flux.fromIterable(items)
@@ -63,10 +69,13 @@ class DroneLogisticsService(
             }
             .collectList()
             .flatMapMany {
+                println("${it.size} == ${items.size}")
                 if(it.size == items.size) {
                     Flux.fromIterable(it)
-                } else {
+                } else if(it.isNotEmpty()){
                     rollbackSelectionDrones(it)
+                } else{
+                    Flux.empty()
                 }
             }
     }
@@ -91,7 +100,7 @@ class DroneLogisticsService(
         order: DeliveryOrder,
         currentTime: LocalDateTime,
         randomStartPosition: Coordinates
-    ) {
+    ): Mono<Drone> {
         val distance = CoordinatesUtils.calculateFlightDistance(randomStartPosition, order.deliveryCoordinates)
         val batteryConsumption =
             BatteryCalculator.calculateBatteryConsumption(drone, distance, order.items.getTotalWeight())
@@ -107,16 +116,8 @@ class DroneLogisticsService(
                 order.deliveryCoordinates
             )
         }
-        droneService.updateDroneInfo(drone)
-            .subscribe(
-                { updatedDrone ->
-                    order.deliveryDroneIds += updatedDrone.id.toHexString()
-                    order.status = DeliveryStatus.IN_PROGRESS
-                },
-                { error ->
-                    logger.error("Error updating drone data: ${error.message}")
-                }
-            )
+
+        return droneService.updateDroneInfo(drone)
     }
 
     companion object {
