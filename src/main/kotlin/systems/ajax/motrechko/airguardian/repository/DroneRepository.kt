@@ -27,7 +27,7 @@ class DroneRepository(
         return this.reactiveMongoTemplate.find(query, Drone::class.java)
     }
 
-    override fun findByStatus(droneStatus: DroneStatus): Flux<Drone> {
+    override fun findAllByStatus(droneStatus: DroneStatus): Flux<Drone> {
         val criteria =  Query().addCriteria(Criteria.where("status").`is`(droneStatus))
         return reactiveMongoTemplate.find(criteria, Drone::class.java)
     }
