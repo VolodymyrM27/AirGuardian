@@ -39,8 +39,8 @@ class DeliveryOrderService(
 
     fun findAllDeliveryOrdersByStatus(deliveryStatus: DeliveryStatus): Mono<List<DeliveryOrderResponse>> =
         deliveryOrderCustomRepository.findOrderByStatus(deliveryStatus)
+            .map { it.toResponse() }
             .collectList()
-            .map { orders -> orders.map { it.toResponse() } }
 
     fun deleteByID(id: String) = deliveryOrderCustomRepository.deleteByID(id)
 

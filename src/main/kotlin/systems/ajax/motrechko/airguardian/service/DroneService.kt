@@ -15,8 +15,8 @@ class DroneService(
 ) {
     fun getAllDrones(): Mono<List<DroneResponse>> = droneRepository
         .findAll()
+        .map { it.toResponse() }
         .collectList()
-        .map { drones -> drones.map { it.toResponse() } }
 
     fun getDroneById(id: String): Mono<Drone> =
         droneRepository.findById(id).switchIfEmpty(Mono.error(DroneNotFoundException("Drone with id $id not found")))
@@ -24,21 +24,20 @@ class DroneService(
     fun createDrone(drone: Drone): Mono<Drone> = droneRepository.save(drone)
 
     fun deleteDroneById(id: String): Mono<Unit> {
-        return droneRepository
-            .deleteById(id)
-            .flatMap { deletedResult ->
+        return droneRepository.deleteById(id)
+            .handle { deletedResult, sink ->
                 if (deletedResult.deletedCount > 0) {
-                    Mono.just(Unit)
+                    sink.next(Unit)
                 } else {
-                    Mono.error(DroneNotFoundException("Drone with id $id not found"))
+                    sink.error(DroneNotFoundException("Drone with id $id not found"))
                 }
             }
     }
 
     fun findDroneByStatus(droneStatus: DroneStatus): Mono<List<DroneResponse>> =
         droneRepository.findAllByStatus(droneStatus)
+            .map { it.toResponse() }
             .collectList()
-            .map { drones -> drones.map { it.toResponse() } }
 
     fun updateDroneInfo(drone: Drone): Mono<Drone> = this.createDrone(drone)
 }
