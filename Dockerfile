@@ -1,6 +1,6 @@
 FROM amazoncorretto:17.0.8-alpine3.18
 
-LABEL authors="volodymyr motrechko"
+LABEL authors="Volodymyr Motrechko"
 
 ENV APP_DIR=/app
 

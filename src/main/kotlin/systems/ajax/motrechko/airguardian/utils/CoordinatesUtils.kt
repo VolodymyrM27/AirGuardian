@@ -46,9 +46,9 @@ object CoordinatesUtils {
         val maxLatitude = latitude + (maxDistance / DEGREE_OF_LATITUDE_PER_KILOMETER)
         val minLatitude = latitude - (maxDistance / DEGREE_OF_LATITUDE_PER_KILOMETER)
         val maxLongitude =
-            longitude + (maxDistance / (DEGREE_OF_LATITUDE_PER_KILOMETER * Math.cos(Math.toRadians(latitude))))
+            longitude + (maxDistance / (DEGREE_OF_LATITUDE_PER_KILOMETER * cos(Math.toRadians(latitude))))
         val minLongitude =
-            longitude - (maxDistance / (DEGREE_OF_LATITUDE_PER_KILOMETER * Math.cos(Math.toRadians(latitude))))
+            longitude - (maxDistance / (DEGREE_OF_LATITUDE_PER_KILOMETER * cos(Math.toRadians(latitude))))
 
         val randomLatitude = Random.nextDouble(minLatitude, maxLatitude)
         val randomLongitude = Random.nextDouble(minLongitude, maxLongitude)
