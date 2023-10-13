@@ -55,21 +55,21 @@ class DeliveryOrderService(
     }
 
     private fun setOrderAsDelivered(order: DeliveryOrder): Mono<DeliveryOrder> {
-        order.status = DeliveryStatus.DELIVERED
-        return droneRepository.updateManyDronesStatus(
-            order.deliveryDroneIds, DroneStatus.ACTIVE
-        )
-            .then(deliveryOrderCustomRepository.save(order))
-            .thenReturn(order)
+        return Mono.defer {
+            val updatedOrder = order.copy(status = DeliveryStatus.DELIVERED)
+            droneRepository.updateManyDronesStatus(
+                updatedOrder.deliveryDroneIds, DroneStatus.ACTIVE
+            )
+                .then(deliveryOrderCustomRepository.save(updatedOrder))
+                .thenReturn(updatedOrder)
+        }
     }
 
     private fun setWaitingStatusAndSave(order: DeliveryOrder): Mono<DeliveryOrder> {
-       return Mono.defer {
-           order.status = DeliveryStatus.WAITING_AVAILABLE_DRONES
-           deliveryOrderRepository.save(order)
-               .thenReturn(order)
-               .doOnSuccess { logger.info("no free drones were found for prayer with id {}", order.id) }
-       }
+        return  deliveryOrderRepository.save(
+            order.copy(status = DeliveryStatus.WAITING_AVAILABLE_DRONES)
+        )
+            .doOnSuccess { logger.info("no free drones were found for prayer with id {}", order.id) }
     }
 
     private fun initializeOrderForDeliveryAndSave(
@@ -86,7 +86,6 @@ class DeliveryOrderService(
                 )
             }
     }
-
 
     companion object {
         private val logger: Logger = LoggerFactory.getLogger(DeliveryOrderService::class.java)

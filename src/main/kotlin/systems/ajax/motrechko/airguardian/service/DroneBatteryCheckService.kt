@@ -29,8 +29,9 @@ class DroneBatteryCheckService(
     }
 
     private fun createApplicationForCharging(drone: Drone): Mono<Unit> {
-        drone.status = DroneStatus.NEED_TO_CHARGE
-        return droneMongoRepository.save(drone)
+        return droneMongoRepository.save(
+            drone.copy(status = DroneStatus.NEED_TO_CHARGE)
+        )
             .doOnSuccess {
                 logger.info(
                     "A request has been received to charge a drone with an ID {}, which is now has {}%",
@@ -38,7 +39,7 @@ class DroneBatteryCheckService(
                 )
             }
             .thenReturn(Unit)
-
+            .doOnError { logger.error("Error while create an application for charging the drone with ID {}", drone.id) }
         //TODO("implement a real application if it is needed in the future")
     }
 

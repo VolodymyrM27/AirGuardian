@@ -80,15 +80,19 @@ class DroneLogisticsService(
     }
 
     private fun findAndBookDrone(it: DeliveryItem) =
-        findDronesByWeightCargo(it.weight).next()
+        findDronesByWeightCargo(it.weight)
+            .next()
         .flatMap { drone ->
+            val updatedDrone = drone.copy(status = DroneStatus.IN_SELECTION)
             droneRepository.updateDroneStatus(drone.id.toHexString(), DroneStatus.IN_SELECTION)
-                .thenReturn(drone)
+                .thenReturn(updatedDrone)
         }
 
     private fun rollbackSelectionDrones(it: MutableList<Drone>): Flux<Drone> =
         Flux.fromIterable(it)
-            .filter { it.status == DroneStatus.IN_SELECTION }
+            .filter {
+                it.status == DroneStatus.IN_SELECTION
+            }
             .map { it.id.toHexString() }
             .collectList()
             .flatMap { droneRepository.updateManyDronesStatus(it, DroneStatus.ACTIVE) }
@@ -106,17 +110,17 @@ class DroneLogisticsService(
         logger.debug("battery Consumption for delivery is {}", batteryConsumption)
         logger.debug("distance for delivery is {}", distance)
 
-        drone.apply {
-            status = DroneStatus.BUSY
-            batteryLevel -= batteryConsumption
-            flightHistory += FlightRecordUtils.createFlightRecord(
+        val updatedDrone = drone.copy(
+            status = DroneStatus.BUSY,
+            batteryLevel = drone.batteryLevel - batteryConsumption,
+            flightHistory = drone.flightHistory + FlightRecordUtils.createFlightRecord(
                 currentTime,
                 randomStartPosition,
                 order.deliveryCoordinates
             )
-        }
+        )
 
-        return droneService.updateDroneInfo(drone)
+        return droneService.updateDroneInfo(updatedDrone)
     }
 
     companion object {
