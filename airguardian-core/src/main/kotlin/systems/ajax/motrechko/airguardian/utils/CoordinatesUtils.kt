@@ -8,10 +8,10 @@ import kotlin.math.sqrt
 import kotlin.random.Random
 
 object CoordinatesUtils {
-    private const val MIN_LATITUDE = -90.0
-    private const val MAX_LATITUDE = 90.0
-    private const val MIN_LONGITUDE = -180.0
-    private const val MAX_LONGITUDE = 180.0
+    const val MIN_LATITUDE = -90.0
+    const val MAX_LATITUDE = 90.0
+    const val MIN_LONGITUDE = -180.0
+    const val MAX_LONGITUDE = 180.0
     private const val EARTH_RADIUS = 6371
     private const val DEGREE_OF_LATITUDE_PER_KILOMETER = 111.32
 
