@@ -1,4 +1,4 @@
-package systems.ajax.motrechko.airguardian.controller
+package systems.ajax.motrechko.airguardian.controller.rest
 
 import com.mongodb.client.result.UpdateResult
 import org.springframework.http.HttpStatus

@@ -1,4 +1,4 @@
-package systems.ajax.motrechko.airguardian.controller
+package systems.ajax.motrechko.airguardian.controller.rest
 
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus

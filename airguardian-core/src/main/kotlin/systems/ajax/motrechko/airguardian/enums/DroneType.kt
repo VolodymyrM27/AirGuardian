@@ -5,5 +5,5 @@ enum class DroneType {
     SCOUT,
     BOMBER,
     MONITORING,
-    DELIVERY
+    DELIVERY,
 }

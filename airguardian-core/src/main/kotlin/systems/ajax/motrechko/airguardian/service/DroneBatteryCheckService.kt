@@ -14,7 +14,7 @@ import systems.ajax.motrechko.airguardian.repository.DroneRepository
 class DroneBatteryCheckService(
     private val droneMongoRepository: DroneRepository
 ) {
-    @MyScheduled(delay = 1000, period = 5000)
+    @MyScheduled(delay = 3000, period = 5000)
     fun checkTheBatteriesOfAllDrones() {
         val dronesFlux: Flux<Drone> = droneMongoRepository
             .findAllDronesWhereTheRemainingBatteryChargeIsLessThanAndHaveTheStatuses(
