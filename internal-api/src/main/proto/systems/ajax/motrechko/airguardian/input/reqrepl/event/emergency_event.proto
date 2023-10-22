@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package systems.ajax.motrechko.airguardian.input.reqrepl.event.emergency_event.proto;
+
+option java_multiple_files = true;
+
+message Coordinates {
+  double latitude = 1;
+  double longitude = 2;
+}
+
+enum EmergencyEventType {
+  ROBBERY = 0;
+  FIRE = 1;
+  SHOOTING = 2;
+  OTHER = 3;
+}
+
+enum EmergencyEventStatus {
+  NEW = 0;
+  PROCESSING = 1;
+  SEARCH_DRONE = 2;
+  DRONE_ON_THE_WAY = 3;
+  UNDER_SUPERVISION = 4;
+  FAKE = 5;
+  FINISHED = 6;
+}
+
+message EmergencyEvent {
+  string id = 1;
+  EmergencyEventType event_type = 2;
+  Coordinates location = 3;
+  google.protobuf.Timestamp timestamp = 4;
+  string description = 5;
+  EmergencyEventStatus event_status = 6;
+  string drone_id = 7;
+}
