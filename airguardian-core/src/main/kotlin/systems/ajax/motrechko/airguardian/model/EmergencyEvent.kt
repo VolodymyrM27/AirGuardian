@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 @Document("emergency_event")
 data class EmergencyEvent(
     @Id
-    val id: ObjectId = ObjectId(),
+    val id: ObjectId? = ObjectId(),
     val eventType: EmergencyEventType = EmergencyEventType.OTHER,
     val location: Coordinates,
     val timestamp: LocalDateTime,

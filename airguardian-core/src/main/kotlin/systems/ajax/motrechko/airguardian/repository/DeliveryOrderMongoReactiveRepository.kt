@@ -17,7 +17,9 @@ import systems.ajax.motrechko.airguardian.model.Drone
 @Repository
 class DeliveryOrderMongoReactiveRepository(
     private val reactiveMongoTemplate: ReactiveMongoTemplate,
-) : GenericRepository<DeliveryOrder>(reactiveMongoTemplate, DeliveryOrder::class.java),DeliveryOrderReactiveRepository {
+) : GenericRepository<DeliveryOrder>(reactiveMongoTemplate, DeliveryOrder::class.java),
+    DeliveryOrderReactiveRepository
+{
     override fun findAllAvailableDronesToDelivery(totalWeight: Double):Flux<Drone> {
         val query = Query()
             .addCriteria(Criteria.where("status").`is`(DroneStatus.ACTIVE))
@@ -36,8 +38,9 @@ class DeliveryOrderMongoReactiveRepository(
     fun deleteByID(id: String): Mono<UpdateResult> {
         val query = Query()
             .addCriteria(Criteria.where("_id").`is`(id))
-        val update = Update()
-            .set("status", DeliveryStatus.DELETED)
+        val update = Update().apply {
+            set("status", DeliveryStatus.DELETED)
+        }
         return reactiveMongoTemplate.updateFirst(query, update, DeliveryOrder::class.java)
     }
 
