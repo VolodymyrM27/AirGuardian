@@ -1,10 +1,9 @@
-package systems.ajax.motrechko.airguardian
+package systems.ajax.motrechko.airguardian.controller.nats
 
-import com.google.protobuf.GeneratedMessageV3
-import com.google.protobuf.Parser
 import io.nats.client.Connection
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -18,11 +17,12 @@ import systems.ajax.motrechko.airguardian.input.reqrepl.drone.get_all.proto.GetA
 import systems.ajax.motrechko.airguardian.input.reqrepl.drone.get_all.proto.GetAllDronesResponse
 import systems.ajax.motrechko.airguardian.internalapi.NatsSubject
 import systems.ajax.motrechko.airguardian.repository.DroneRepository
-import java.time.Duration
+import systems.ajax.motrechko.airguardian.utils.TestUtils
+import systems.ajax.motrechko.airguardian.utils.TestUtils.doRequest
 
 @SpringBootTest
-@ActiveProfiles("dev")
-class TestNats {
+@ActiveProfiles("test")
+class GetAllDronesNatsControllerTest {
 
     @Autowired
     private lateinit var natsConnection: Connection
@@ -38,43 +38,37 @@ class TestNats {
         reactiveMongoTemplate.remove(Query(), Drone::class.java).block()
     }
 
+    @BeforeEach
+    fun setUp() {
+        droneRepository.save(TestUtils.DRONE_ONE)
+            .then(droneRepository.save(TestUtils.DRONE_TWO))
+            .then(droneRepository.save(TestUtils.DRONE_THREE))
+            .block()
+    }
 
     @Test
     fun `should return success response for get all devices`() {
         // GIVEN
         val request = GetAllDronesRequest.getDefaultInstance()
 
-        val protoDeviceList = droneRepository.findAll().map { it.toResponse().toProtoDrone() }
+        val protoDroneList = droneRepository.findAll().map { it.toResponse().toProtoDrone() }
             .collectList()
             .block()
 
-        println(protoDeviceList)
+        println(protoDroneList)
 
         val expectedResponse = GetAllDronesResponse.newBuilder().apply {
-            successBuilder.addAllDrones(protoDeviceList)
+            successBuilder.addAllDrones(protoDroneList)
         }.build()
         println("this is expected response: $expectedResponse")
         // WHEN
         val actual = doRequest(
+            natsConnection,
             NatsSubject.EmergencyRequest.GET_ALL,
             request,
             GetAllDronesResponse.parser()
         )
-
         // THEN
         assertThat(actual).isEqualTo(expectedResponse)
-    }
-
-    private fun <RequestT : GeneratedMessageV3, ResponseT : GeneratedMessageV3> doRequest(
-        subject: String,
-        payload: RequestT,
-        parser: Parser<ResponseT>,
-    ): ResponseT {
-        val response = natsConnection.requestWithTimeout(
-            subject,
-            payload.toByteArray(),
-            Duration.ofSeconds(10L)
-        )
-        return parser.parseFrom(response.get().data)
     }
 }
