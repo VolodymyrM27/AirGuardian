@@ -13,13 +13,17 @@ import java.time.LocalDateTime
 @ControllerAdvice
 class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = [DroneNotFoundException::class, DeliveryOrderNotFoundException::class])
+    @ExceptionHandler(value = [
+        DroneNotFoundException::class,
+        DeliveryOrderNotFoundException::class,
+        DroneIsNotAvailableException::class
+    ])
     fun notFoundException(request: ServerHttpRequest, exception: Exception): Mono<ApiError> =
-         responseEntity(request.uri.path, exception.message, HttpStatus.NOT_FOUND)
+        responseEntity(request.uri.path, exception.message, HttpStatus.NOT_FOUND)
 
     @ExceptionHandler(Exception::class)
     fun handleOtherExceptions(request: ServerHttpRequest, exception: Exception): Mono<ApiError> =
-         responseEntity(request.uri.path, exception.message, HttpStatus.INTERNAL_SERVER_ERROR)
+        responseEntity(request.uri.path, exception.message, HttpStatus.INTERNAL_SERVER_ERROR)
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidationException(
