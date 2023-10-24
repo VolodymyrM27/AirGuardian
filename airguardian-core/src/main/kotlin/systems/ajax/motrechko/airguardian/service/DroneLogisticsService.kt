@@ -11,6 +11,7 @@ import systems.ajax.motrechko.airguardian.model.Coordinates
 import systems.ajax.motrechko.airguardian.model.DeliveryItem
 import systems.ajax.motrechko.airguardian.model.DeliveryOrder
 import systems.ajax.motrechko.airguardian.model.Drone
+import systems.ajax.motrechko.airguardian.model.EmergencyEvent
 import systems.ajax.motrechko.airguardian.model.getTotalWeight
 import systems.ajax.motrechko.airguardian.repository.DeliveryOrderMongoReactiveRepository
 import systems.ajax.motrechko.airguardian.repository.DroneRepository
@@ -58,22 +59,45 @@ class DroneLogisticsService(
             .thenReturn(order)
     }
 
+    fun initializeDronesForEmergencyEvent(emergencyEvent: EmergencyEvent, drone: Drone): Mono<Drone> {
+       return Mono.fromSupplier {
+           val currentTime = LocalDateTime.now()
+           val randomStartPosition = CoordinatesUtils.generateRandomCoordinatesWithinRange(
+               emergencyEvent.location.latitude,
+               emergencyEvent.location.longitude,
+               PLUG_MAX_RANGE_COORDINATES_IN_KILOMETERS_EMERGENCY
+           )
+           val distance = CoordinatesUtils.calculateFlightDistance(randomStartPosition, emergencyEvent.location)
+           val batteryConsumption =
+               BatteryCalculator.calculateBatteryConsumption(drone, distance)
+
+           drone.copy(
+               status = DroneStatus.BUSY,
+               batteryLevel = drone.batteryLevel - batteryConsumption,
+               flightHistory = drone.flightHistory + FlightRecordUtils.createFlightRecord(
+                   currentTime,
+                   randomStartPosition,
+                   emergencyEvent.location
+               )
+           )
+       }.flatMap {droneService.updateDroneInfo(it) }
+    }
 
     private fun findDronesByWeightCargo(totalWeight: Double): Flux<Drone> =
-         deliveryOrderCustomRepository.findAllAvailableDronesToDelivery(totalWeight)
+        deliveryOrderCustomRepository.findAllAvailableDronesToDelivery(totalWeight)
 
     private fun findDronesForCategories(items: List<DeliveryItem>): Flux<Drone> {
-       return Flux.fromIterable(items)
+        return Flux.fromIterable(items)
             .flatMap {
                 findAndBookDrone(it)
             }
             .collectList()
             .flatMapMany {
-                if(it.size == items.size) {
+                if (it.size == items.size) {
                     Flux.fromIterable(it)
-                } else if(it.isNotEmpty()){
+                } else if (it.isNotEmpty()) {
                     rollbackSelectionDrones(it)
-                } else{
+                } else {
                     Flux.empty()
                 }
             }
@@ -82,11 +106,11 @@ class DroneLogisticsService(
     private fun findAndBookDrone(it: DeliveryItem) =
         findDronesByWeightCargo(it.weight)
             .next()
-        .flatMap { drone ->
-            val updatedDrone = drone.copy(status = DroneStatus.IN_SELECTION)
-            droneRepository.updateDroneStatus(drone.id.toHexString(), DroneStatus.IN_SELECTION)
-                .thenReturn(updatedDrone)
-        }
+            .flatMap { drone ->
+                val updatedDrone = drone.copy(status = DroneStatus.IN_SELECTION)
+                droneRepository.updateDroneStatus(drone.id.toHexString(), DroneStatus.IN_SELECTION)
+                    .thenReturn(updatedDrone)
+            }
 
     private fun rollbackSelectionDrones(it: MutableList<Drone>): Flux<Drone> =
         Flux.fromIterable(it)
@@ -124,6 +148,7 @@ class DroneLogisticsService(
     }
 
     companion object {
+        private const val PLUG_MAX_RANGE_COORDINATES_IN_KILOMETERS_EMERGENCY: Double = 25.0
         private const val PLUG_MAX_RANGE_COORDINATES_IN_KILOMETERS: Double = 40.0
         private val logger: Logger = LoggerFactory.getLogger(DroneLogisticsService::class.java)
     }
