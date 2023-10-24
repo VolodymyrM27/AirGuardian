@@ -4,6 +4,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
 import com.google.protobuf.GeneratedMessageV3
 import io.nats.client.Connection
+import reactor.core.scheduler.Schedulers
 import systems.ajax.motrechko.airguardian.controller.nats.NatsController
 
 
@@ -25,6 +26,7 @@ class NatsControllerBeanPostProcessor(
             val parsedData = controller.parser.parseFrom(message.data)
             controller
                 .handle(parsedData)
+                .subscribeOn(Schedulers.boundedElastic())
                 .subscribe { response -> connection.publish(message.replyTo, response.toByteArray()) }
         }.subscribe(controller.subject)
     }
