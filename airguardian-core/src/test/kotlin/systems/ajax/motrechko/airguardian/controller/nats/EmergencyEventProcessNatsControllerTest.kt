@@ -11,14 +11,14 @@ import org.junit.jupiter.api.AfterEach
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.test.context.ActiveProfiles
-import systems.ajax.motrechko.airguardian.dto.response.toProtoEmergencyEvent
-import systems.ajax.motrechko.airguardian.dto.response.toProtoTimestampBuilder
-import systems.ajax.motrechko.airguardian.dto.response.toResponse
 import systems.ajax.motrechko.airguardian.enums.EmergencyEventStatus
 import systems.ajax.motrechko.airguardian.enums.EmergencyEventType.SHOOTING
 import systems.ajax.motrechko.airguardian.input.reqrepl.event.new_event.proto.EmergencyEventRequest
 import systems.ajax.motrechko.airguardian.input.reqrepl.event.new_event.proto.EmergencyEventResponse
 import systems.ajax.motrechko.airguardian.internalapi.NatsSubject
+import systems.ajax.motrechko.airguardian.mapper.toProtoEmergencyEvent
+import systems.ajax.motrechko.airguardian.mapper.toProtoTimestampBuilder
+import systems.ajax.motrechko.airguardian.mapper.toResponse
 import systems.ajax.motrechko.airguardian.model.Coordinates
 import systems.ajax.motrechko.airguardian.model.Drone
 import systems.ajax.motrechko.airguardian.commonresponse.event.EmergencyEvent as ProtoEmergencyEvent

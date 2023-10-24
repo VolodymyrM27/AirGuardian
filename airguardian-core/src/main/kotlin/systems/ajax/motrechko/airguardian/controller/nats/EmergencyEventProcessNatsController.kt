@@ -4,13 +4,13 @@ import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
-import systems.ajax.motrechko.airguardian.dto.response.toEntity
-import systems.ajax.motrechko.airguardian.dto.response.toProtoEmergencyEvent
-import systems.ajax.motrechko.airguardian.dto.response.toResponse
 import systems.ajax.motrechko.airguardian.commonresponse.event.EmergencyEvent as ProtoEmergencyEvent
 import systems.ajax.motrechko.airguardian.input.reqrepl.event.new_event.proto.EmergencyEventRequest
 import systems.ajax.motrechko.airguardian.input.reqrepl.event.new_event.proto.EmergencyEventResponse
 import systems.ajax.motrechko.airguardian.internalapi.NatsSubject.EmergencyRequest.NEW_EMERGENCY_EVENT
+import systems.ajax.motrechko.airguardian.mapper.toEntity
+import systems.ajax.motrechko.airguardian.mapper.toProtoEmergencyEvent
+import systems.ajax.motrechko.airguardian.mapper.toResponse
 import systems.ajax.motrechko.airguardian.service.EmergencyService
 import systems.ajax.motrechko.airguardian.input.reqrepl.event.new_event.proto.EmergencyEventResponse as EmergencyEventResponseProto
 
