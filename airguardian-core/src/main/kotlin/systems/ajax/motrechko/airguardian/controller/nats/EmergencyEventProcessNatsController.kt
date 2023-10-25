@@ -32,9 +32,7 @@ class EmergencyEventProcessNatsController(
     }
 
     private fun buildSuccessResponse(protoEmergencyEvent: ProtoEmergencyEvent): EmergencyEventResponseProto =
-        EmergencyEventResponseProto
-            .newBuilder()
-            .apply {
+        EmergencyEventResponseProto.newBuilder().apply {
             successBuilder.setEvent(protoEmergencyEvent)
         }.build()
 

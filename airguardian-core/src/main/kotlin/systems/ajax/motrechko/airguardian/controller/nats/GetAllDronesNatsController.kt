@@ -30,8 +30,7 @@ class GetAllDronesNatsController(
     }
 
     private fun buildSuccessResponse(deviceList: List<ProtoDrone>): GetAllDronesResponse =
-        GetAllDronesResponse.
-        newBuilder().apply {
+        GetAllDronesResponse.newBuilder().apply {
             successBuilder.addAllDrones(deviceList)
         }.build()
 

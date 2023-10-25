@@ -1,21 +1,18 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
+import "google/type/latlng.proto";
 
 package systems.ajax.motrechko.airguardian.commonresponse.event;
 
 option java_multiple_files = true;
 
-message Coordinates {
-  double latitude = 1;
-  double longitude = 2;
-}
-
 enum EmergencyEventType {
-  ROBBERY = 0;
-  FIRE = 1;
-  SHOOTING = 2;
-  OTHER = 3;
+  UNKNOWN = 0;
+  ROBBERY = 1;
+  FIRE = 2;
+  SHOOTING = 3;
+  OTHER = 4;
 }
 
 enum EmergencyEventStatus {
@@ -31,7 +28,7 @@ enum EmergencyEventStatus {
 message EmergencyEvent {
   optional string id = 1;
   EmergencyEventType event_type = 2;
-  Coordinates location = 3;
+  google.type.LatLng location = 3;
   google.protobuf.Timestamp timestamp = 4;
   string description = 5;
   EmergencyEventStatus event_status = 6;

@@ -24,7 +24,7 @@ import systems.ajax.motrechko.airguardian.model.Drone
 import systems.ajax.motrechko.airguardian.commonresponse.event.EmergencyEvent as ProtoEmergencyEvent
 import systems.ajax.motrechko.airguardian.commonresponse.event.EmergencyEventType as ProtoEmergencyEventType
 import systems.ajax.motrechko.airguardian.commonresponse.event.EmergencyEventStatus as ProtoEmergencyEventStatus
-import systems.ajax.motrechko.airguardian.commonresponse.event.Coordinates as ProtoCoordinates
+import com.google.type.LatLng as ProtoCoordinates
 import systems.ajax.motrechko.airguardian.model.EmergencyEvent
 import systems.ajax.motrechko.airguardian.repository.DroneRepository
 import systems.ajax.motrechko.airguardian.utils.TestUtils
