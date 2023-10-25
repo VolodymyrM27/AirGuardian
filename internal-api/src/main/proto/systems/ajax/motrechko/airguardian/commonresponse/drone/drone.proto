@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package systems.ajax.motrechko.airguardian.commonresponse.drone;
+
+option java_multiple_files = true;
+
+message Drone {
+  optional string id = 1;
+  string model = 2;
+  repeated DroneType type = 3;
+  double speed = 4;
+  double weight = 5;
+  int32 number_of_propellers = 6;
+  double load_capacity = 7;
+  double cost = 8;
+  DroneStatus status = 9;
+  double battery_level = 10;
+  DroneSize size = 11;
+  double max_flight_altitude = 12;
+}
+
+enum DroneType {
+  DRONE_TYPE_UNSPECIFIED = 0;
+  FPV = 1;
+  SCOUT = 2;
+  BOMBER = 3;
+  MONITORING = 4;
+  DELIVERY = 5;
+}
+
+enum DroneStatus {
+  DRONE_STATUS_UNSPECIFIED = 0;
+  INACTIVE = 1;
+  ACTIVE = 2;
+  CHARGING = 3;
+  NEED_TO_CHARGE = 4;
+  BUSY = 5;
+  IN_SELECTION = 6;
+}
+
+enum DroneSize {
+  DRONE_SIZE_UNSPECIFIED = 0;
+  SMALL = 1;
+  MEDIUM = 2;
+  LARGE = 3;
+}

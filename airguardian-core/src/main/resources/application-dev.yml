@@ -1,0 +1,15 @@
+spring:
+  data:
+    mongodb:
+      database: drone
+      port: 27017
+      host: localhost
+      password: secret
+      username: root
+      authentication-database: admin
+  docker:
+    compose:
+      enabled: true
+      file: docker-compose.dev.yml
+nats:
+  url: nats://localhost:4222

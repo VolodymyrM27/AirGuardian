@@ -1,0 +1,11 @@
+spring:
+  data:
+    mongodb:
+      database: drone
+      port: 27017
+      host: airguardian-mongodb-1
+      password: secret
+      username: root
+      authentication-database: admin
+nats:
+  url: airguardian-nats-1

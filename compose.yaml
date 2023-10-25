@@ -4,6 +4,8 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+      nats:
+        condition: service_started
     ports:
       - 8080:8080
 
@@ -16,6 +18,15 @@ services:
       - 27017:27017
     healthcheck:
       test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 1s
+      timeout: 1s
+      retries: 3
+  nats:
+    image: nats
+    ports:
+      - "4222:4222"
+    healthcheck:
+      test: [ "CMD", "nats", "ping" ]
       interval: 1s
       timeout: 1s
       retries: 3

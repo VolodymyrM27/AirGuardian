@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package systems.ajax.motrechko.airguardian.input.reqrepl.event.new_event.proto;
+
+option java_multiple_files = true;
+
+import "systems/ajax/motrechko/airguardian/commonresponse/event/emergency_event.proto";
+
+message EmergencyEventRequest {
+  commonresponse.event.EmergencyEvent event = 1;
+}
+
+message EmergencyEventResponse {
+  oneof response {
+    Success success = 1;
+    Failure failure = 2;
+  }
+
+  message Success {
+     commonresponse.event.EmergencyEvent event = 1;
+  }
+
+  message Failure {
+    string message = 100;
+  }
+}

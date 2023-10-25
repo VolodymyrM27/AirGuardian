@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/type/latlng.proto";
+
+package systems.ajax.motrechko.airguardian.commonresponse.event;
+
+option java_multiple_files = true;
+
+enum EmergencyEventType {
+  EMERGENCY_EVENT_TYPE_UNSPECIFIED = 0;
+  ROBBERY = 1;
+  FIRE = 2;
+  SHOOTING = 3;
+  OTHER = 4;
+}
+
+enum EmergencyEventStatus {
+  EMERGENCY_EVENT_STATUS_UNSPECIFIED = 0;
+  NEW = 1;
+  PROCESSING = 2;
+  SEARCH_DRONE = 3;
+  DRONE_ON_THE_WAY = 4;
+  UNDER_SUPERVISION = 5;
+  FAKE = 6;
+  FINISHED = 7;
+}
+
+message EmergencyEvent {
+  optional string id = 1;
+  EmergencyEventType event_type = 2;
+  google.type.LatLng location = 3;
+  google.protobuf.Timestamp timestamp = 4;
+  string description = 5;
+  EmergencyEventStatus event_status = 6;
+  string drone_id = 7;
+}

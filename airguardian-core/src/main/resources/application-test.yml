@@ -1,0 +1,11 @@
+spring:
+  data:
+    mongodb:
+      database: drone-test
+      port: 27017
+      host: localhost
+      password: secret
+      username: root
+      authentication-database: admin
+nats:
+  url: nats://localhost:4222
