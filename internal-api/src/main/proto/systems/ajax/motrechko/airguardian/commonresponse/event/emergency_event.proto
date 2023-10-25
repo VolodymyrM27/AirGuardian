@@ -8,7 +8,7 @@ package systems.ajax.motrechko.airguardian.commonresponse.event;
 option java_multiple_files = true;
 
 enum EmergencyEventType {
-  UNKNOWN = 0;
+  EMERGENCY_EVENT_TYPE_UNSPECIFIED = 0;
   ROBBERY = 1;
   FIRE = 2;
   SHOOTING = 3;
@@ -16,13 +16,14 @@ enum EmergencyEventType {
 }
 
 enum EmergencyEventStatus {
-  NEW = 0;
-  PROCESSING = 1;
-  SEARCH_DRONE = 2;
-  DRONE_ON_THE_WAY = 3;
-  UNDER_SUPERVISION = 4;
-  FAKE = 5;
-  FINISHED = 6;
+  EMERGENCY_EVENT_STATUS_UNSPECIFIED = 0;
+  NEW = 1;
+  PROCESSING = 2;
+  SEARCH_DRONE = 3;
+  DRONE_ON_THE_WAY = 4;
+  UNDER_SUPERVISION = 5;
+  FAKE = 6;
+  FINISHED = 7;
 }
 
 message EmergencyEvent {

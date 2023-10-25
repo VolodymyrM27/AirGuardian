@@ -20,24 +20,27 @@ message Drone {
 }
 
 enum DroneType {
-  FPV = 0;
-  SCOUT = 1;
-  BOMBER = 2;
-  MONITORING = 3;
-  DELIVERY = 4;
+  DRONE_TYPE_UNSPECIFIED = 0;
+  FPV = 1;
+  SCOUT = 2;
+  BOMBER = 3;
+  MONITORING = 4;
+  DELIVERY = 5;
 }
 
 enum DroneStatus {
-  INACTIVE = 0;
-  ACTIVE = 1;
-  CHARGING = 2;
-  NEED_TO_CHARGE = 3;
-  BUSY = 4;
-  IN_SELECTION = 5;
+  DRONE_STATUS_UNSPECIFIED = 0;
+  INACTIVE = 1;
+  ACTIVE = 2;
+  CHARGING = 3;
+  NEED_TO_CHARGE = 4;
+  BUSY = 5;
+  IN_SELECTION = 6;
 }
 
 enum DroneSize {
-  SMALL = 0;
-  MEDIUM = 1;
-  LARGE = 2;
+  DRONE_SIZE_UNSPECIFIED = 0;
+  SMALL = 1;
+  MEDIUM = 2;
+  LARGE = 3;
 }
