@@ -1,6 +1,7 @@
 package systems.ajax.motrechko.airguardian.service
 
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import systems.ajax.motrechko.airguardian.dto.response.DroneResponse
 import systems.ajax.motrechko.airguardian.dto.response.toResponse
@@ -13,10 +14,9 @@ import systems.ajax.motrechko.airguardian.repository.DroneRepository
 class DroneService(
     private val droneRepository: DroneRepository
 ) {
-    fun getAllDrones(): Mono<List<DroneResponse>> = droneRepository
+    fun getAllDrones(): Flux<DroneResponse> = droneRepository
         .findAll()
         .map { it.toResponse() }
-        .collectList()
 
     fun getDroneById(id: String): Mono<Drone> =
         droneRepository.findById(id).switchIfEmpty(Mono.error(DroneNotFoundException("Drone with id $id not found")))
@@ -34,10 +34,9 @@ class DroneService(
             }
     }
 
-    fun findDroneByStatus(droneStatus: DroneStatus): Mono<List<DroneResponse>> =
+    fun findDroneByStatus(droneStatus: DroneStatus): Flux<DroneResponse> =
         droneRepository.findAllByStatus(droneStatus)
             .map { it.toResponse() }
-            .collectList()
 
     fun updateDroneInfo(drone: Drone): Mono<Drone> = this.createDrone(drone)
 }

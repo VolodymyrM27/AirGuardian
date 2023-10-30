@@ -3,6 +3,7 @@ package systems.ajax.motrechko.airguardian.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import systems.ajax.motrechko.airguardian.dto.response.DeliveryOrderResponse
 import systems.ajax.motrechko.airguardian.dto.response.toResponse
@@ -37,17 +38,15 @@ class DeliveryOrderService(
     fun getInfoAboutOrderByID(id: String): Mono<DeliveryOrder> = deliveryOrderRepository.findById(id)
         .switchIfEmpty(Mono.error(DeliveryOrderNotFoundException("Order with $id not found")))
 
-    fun findAllDeliveryOrdersByStatus(deliveryStatus: DeliveryStatus): Mono<List<DeliveryOrderResponse>> =
+    fun findAllDeliveryOrdersByStatus(deliveryStatus: DeliveryStatus): Flux<DeliveryOrderResponse> =
         deliveryOrderCustomRepository.findOrderByStatus(deliveryStatus)
             .map { it.toResponse() }
-            .collectList()
 
     fun deleteByID(id: String) = deliveryOrderCustomRepository.deleteByID(id)
 
-    fun findAllOrdersByDroneID(droneID: String): Mono<List<DeliveryOrder>> =
+    fun findAllOrdersByDroneID(droneID: String): Flux<DeliveryOrder> =
         deliveryOrderCustomRepository
             .findOrdersByDroneId(droneID)
-            .collectList()
 
     fun complete(id: String): Mono<DeliveryOrder> {
         return getInfoAboutOrderByID(id)
