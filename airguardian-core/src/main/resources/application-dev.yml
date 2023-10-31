@@ -11,5 +11,9 @@ spring:
     compose:
       enabled: true
       file: docker-compose.dev.yml
+  kafka:
+    bootstrap-servers: localhost:9092
+    properties:
+      schema.registry.url: http://localhost:8081
 nats:
   url: nats://localhost:4222
