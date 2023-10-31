@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package systems.ajax.motrechko.airguardian.output.pubsub.application.drone_battery_charging_application.proto;
+
+option java_multiple_files = true;
+
+import "systems/ajax/motrechko/airguardian/commonresponse/application/drone_battery_charging_application.proto";
+
+
+message DroneBatteryChargingApplicationEvent{
+  commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication application = 1;
+}
