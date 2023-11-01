@@ -5,7 +5,7 @@ import systems.ajax.motrechko.airguardian.model.BatteryApplication
 
 fun BatteryApplication.toProto(): DroneBatteryChargingApplication {
     return DroneBatteryChargingApplication.newBuilder()
-        .setServiceMessage(this.serviceMessage)
-        .setDroneId(this.droneId)
+        .setServiceMessage(serviceMessage)
+        .setDroneId(droneId)
         .build()
 }

@@ -18,7 +18,7 @@ class KafkaConfiguration(
     @Value("\${spring.kafka.properties.schema.registry.url}") private val schemaRegistryUrl: String
 ) {
     @Bean
-    fun kafkaSenderDeviceUpdatedEvent(): KafkaSender<String, DroneBatteryChargingApplicationEvent> =
+    fun kafkaSenderDroneBatteryChargingApplicationEvent(): KafkaSender<String, DroneBatteryChargingApplicationEvent> =
         createKafkaSender(producerProperties())
 
     private fun <T : GeneratedMessageV3> createKafkaSender(properties: MutableMap<String, Any>):

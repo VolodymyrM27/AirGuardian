@@ -10,7 +10,7 @@ import systems.ajax.motrechko.airguardian.output.pubsub.application.drone_batter
 
 @Component
 class DroneChargingApplicationKafkaProducer(
-    private val droneChargingApplicationKafkaEvent: KafkaSender<String, DroneBatteryChargingApplicationEvent>
+    private val droneChargingApplicationKafkaEventSender: KafkaSender<String, DroneBatteryChargingApplicationEvent>
 ) {
     fun sendBatteryChargingApplication(batteryApplicationProto: DroneBatteryChargingApplication) {
         val droneBatteryChargingApplicationEvent = DroneBatteryChargingApplicationEvent.newBuilder()
@@ -26,7 +26,7 @@ class DroneChargingApplicationKafkaProducer(
             null
         )
 
-        droneChargingApplicationKafkaEvent.send(record.toMono()).subscribe()
+        droneChargingApplicationKafkaEventSender.send(record.toMono()).subscribe()
     }
 }
 
