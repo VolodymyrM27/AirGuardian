@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package systems.ajax.motrechko.airguardian.commonresponse.application.drone_battery_charging_application.proto;
+
+option java_multiple_files = true;
+
+message DroneBatteryChargingApplication{
+  string droneId = 1;
+  string serviceMessage = 2;
+}

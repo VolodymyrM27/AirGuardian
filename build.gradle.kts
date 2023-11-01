@@ -9,6 +9,9 @@ allprojects {
     group = "systems.ajax.motrechko"
     version = "0.0.1-SNAPSHOT"
     repositories {
+        maven {
+            url = uri("https://packages.confluent.io/maven/")
+        }
         mavenCentral()
     }
 }

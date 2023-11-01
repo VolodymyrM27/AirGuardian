@@ -20,6 +20,7 @@ class GetAllDronesNatsController(
 
     override fun handle(request: GetAllDronesRequest): Mono<GetAllDronesResponse> {
         return droneService.getAllDrones()
+            .collectList()
             .map { drones -> buildSuccessResponse(drones.map { it.toProtoDrone() }) }
             .onErrorResume { exception ->
                 buildFailureResponse(

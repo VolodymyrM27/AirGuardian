@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import systems.ajax.motrechko.airguardian.dto.request.OrderCreateRequest
 import systems.ajax.motrechko.airguardian.dto.request.StatusRequest
@@ -36,7 +37,7 @@ class DeliveryController(
     @GetMapping("/status")
     fun findAllDeliveryOrderByStatus(
         @RequestBody deliveryStatus: StatusRequest
-    ): Mono<List<DeliveryOrderResponse>> =
+    ): Flux<DeliveryOrderResponse> =
         deliveryOrderService.findAllDeliveryOrdersByStatus(DeliveryStatus.valueOf(deliveryStatus.status))
 
 
@@ -47,7 +48,7 @@ class DeliveryController(
     }
 
     @GetMapping("/drone/{droneID}")
-    fun getAllOrdersByDroneID(@PathVariable droneID: String): Mono<List<DeliveryOrder>> =
+    fun getAllOrdersByDroneID(@PathVariable droneID: String): Flux<DeliveryOrder> =
         deliveryOrderService.findAllOrdersByDroneID(droneID)
 
     @GetMapping("/{id}/complete")

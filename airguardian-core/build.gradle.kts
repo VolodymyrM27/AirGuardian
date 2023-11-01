@@ -11,6 +11,10 @@ plugins {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive:3.1.3")
+    implementation("org.springframework.kafka:spring-kafka:3.0.12")
+    implementation("io.projectreactor.kafka:reactor-kafka:1.3.21")
+    implementation("io.confluent:kafka-protobuf-serializer:7.5.1")
+    implementation("io.confluent:kafka-schema-registry-maven-plugin:7.5.1")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
     implementation("io.nats:jnats:2.16.14")
     implementation("com.google.protobuf:protobuf-java:3.24.3")

@@ -7,12 +7,16 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import systems.ajax.motrechko.airguardian.beanPostProcessor.MyScheduled
 import systems.ajax.motrechko.airguardian.enums.DroneStatus
+import systems.ajax.motrechko.airguardian.kafka.DroneChargingApplicationKafkaProducer
+import systems.ajax.motrechko.airguardian.mapper.toProto
+import systems.ajax.motrechko.airguardian.model.BatteryApplication
 import systems.ajax.motrechko.airguardian.model.Drone
 import systems.ajax.motrechko.airguardian.repository.DroneRepository
 
 @Service
 class DroneBatteryCheckService(
-    private val droneMongoRepository: DroneRepository
+    private val droneMongoRepository: DroneRepository,
+    private val droneChargingApplicationKafkaProducer: DroneChargingApplicationKafkaProducer
 ) {
     @MyScheduled(delay = 3000, period = 5000)
     fun checkTheBatteriesOfAllDrones() {
@@ -29,9 +33,14 @@ class DroneBatteryCheckService(
     }
 
     private fun createApplicationForCharging(drone: Drone): Mono<Unit> {
-        return droneMongoRepository.save(
-            drone.copy(status = DroneStatus.NEED_TO_CHARGE)
-        )
+        return droneMongoRepository.save(drone.copy(status = DroneStatus.NEED_TO_CHARGE))
+            .doOnNext {
+                val application = BatteryApplication(
+                    serviceMessage = "The drone needs to be charged, battery level is ${drone.batteryLevel}%.",
+                    droneId = drone.id.toHexString()
+                )
+                droneChargingApplicationKafkaProducer.sendBatteryChargingApplication(application.toProto())
+            }
             .doOnSuccess {
                 logger.info(
                     "A request has been received to charge a drone with an ID {}, which is now has {}%",
@@ -40,7 +49,6 @@ class DroneBatteryCheckService(
             }
             .thenReturn(Unit)
             .doOnError { logger.error("Error while create an application for charging the drone with ID {}", drone.id) }
-        //TODO("implement a real application if it is needed in the future")
     }
 
     companion object {
