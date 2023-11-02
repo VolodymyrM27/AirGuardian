@@ -8,11 +8,11 @@ option java_multiple_files = true;
 message MonitoringObject{
   optional string id = 1;
   string name = 2;
-  ObjectType type = 3;
+  MonitoringObjectType type = 3;
   google.type.LatLng coordinates = 4;
 }
 
-enum ObjectType{
+enum MonitoringObjectType{
   MONITORING_OBJECT_UNSPECIFIED = 0;
   AIR_QUALITY = 1;
   INFRASTRUCTURE = 2;

@@ -4,4 +4,5 @@ enum class MonitoringObjectType {
     AIR_QUALITY,
     INFRASTRUCTURE,
     TRAFFIC,
+    OTHER
 }

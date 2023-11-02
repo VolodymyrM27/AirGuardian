@@ -7,7 +7,7 @@ option java_multiple_files = true;
 import "systems/ajax/motrechko/airguardian/commonresponse/monitoringobject/monitoring_object.proto";
 
 message GetMonitoringObjectRequest {
-    string monitoring_object_id= 1;
+  string monitoring_object_id = 1;
 }
 
 message GetMonitoringObjectResponse {
