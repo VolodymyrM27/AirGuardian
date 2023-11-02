@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package systems.ajax.motrechko.airguardian.commonresponse.monitoring_object.proto;
+import "google/type/latlng.proto";
+
+option java_multiple_files = true;
+
+message MonitoringObject{
+  optional string id = 1;
+  string name = 2;
+  ObjectType type = 3;
+  google.type.LatLng coordinates = 4;
+}
+
+enum ObjectType{
+  MONITORING_OBJECT_UNSPECIFIED = 0;
+  AIR_QUALITY = 1;
+  INFRASTRUCTURE = 2;
+  TRAFFIC = 3;
+}
