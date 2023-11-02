@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package systems.ajax.motrechko.airguardian.monitoring_object_service.proto;
+import "systems/ajax/motrechko/airguardian/commonresponse/monitoringobject/monitoring_object.proto";
+import "systems/ajax/motrechko/airguardian/input/reqrepl/monitoringobject/create_monitoring_object.proto";
+import "systems/ajax/motrechko/airguardian/input/reqrepl/monitoringobject/delete_monitoring_object.proto";
+import "systems/ajax/motrechko/airguardian/input/reqrepl/monitoringobject/update_monitoring_object.proto";
+import "systems/ajax/motrechko/airguardian/input/reqrepl/monitoringobject/get_monitoring_object.proto";
+import "systems/ajax/motrechko/airguardian/input/reqrepl/monitoringobject/get_monitoring_objects.proto";
+
+option java_multiple_files = true;
+
+
+
+service MonitoringObjectService{
+
+    rpc GetMonitoringObject(input.reqrepl.monitoringobject.get_monitoring_object.GetMonitoringObjectRequest)
+        returns (input.reqrepl.monitoringobject.get_monitoring_object.GetMonitoringObjectResponse);
+
+    rpc GetMonitoringObjects(input.reqrepl.monitoringobject.get_monitoring_objects.GetMonitoringObjectsRequest)
+        returns (stream input.reqrepl.monitoringobject.get_monitoring_objects.GetMonitoringObjectsResponse);
+
+    rpc CreateMonitoringObject(input.reqrepl.monitoringobject.create_monitoring_object.CreateMonitoringObjectRequest)
+        returns (input.reqrepl.monitoringobject.create_monitoring_object.CreateMonitoringObjectResponse);
+
+    rpc UpdateMonitoringObject(input.reqrepl.monitoringobject.update_monitoring_object.UpdateMonitoringObjectRequest)
+        returns (input.reqrepl.monitoringobject.update_monitoring_object.UpdateMonitoringObjectResponse);
+
+    rpc DeleteMonitoringObject(input.reqrepl.monitoringobject.delete_monitoring_object.DeleteMonitoringObjectRequest)
+        returns (input.reqrepl.monitoringobject.delete_monitoring_object.DeleteMonitoringObjectResponse);
+}
