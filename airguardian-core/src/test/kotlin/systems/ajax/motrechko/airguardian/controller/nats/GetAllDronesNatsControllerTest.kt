@@ -47,7 +47,7 @@ class GetAllDronesNatsControllerTest {
     }
 
     @Test
-    fun `should return success response for get all devices`() {
+    fun `should return success response for get all drones`() {
         // GIVEN
         val request = GetAllDronesRequest.getDefaultInstance()
 

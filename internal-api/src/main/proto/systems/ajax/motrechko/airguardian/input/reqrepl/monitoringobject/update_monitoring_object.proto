@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package systems.ajax.motrechko.airguardian.input.reqrepl.monitoringobject.update_monitoring_object;
+
+option java_multiple_files = true;
+
+import "systems/ajax/motrechko/airguardian/commonresponse/monitoringobject/monitoring_object.proto";
+
+message UpdateMonitoringObjectRequest {
+    commonresponse.monitoring_object.proto.MonitoringObject monitoring_object = 1;
+}
+
+message UpdateMonitoringObjectResponse {
+  oneof response {
+    Success success = 1;
+    Failure failure = 2;
+  }
+
+  message Success {
+    commonresponse.monitoring_object.proto.MonitoringObject monitoring_object = 1;
+  }
+
+  message Failure {
+    string message = 100;
+  }
+}

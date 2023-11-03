@@ -4,12 +4,12 @@ import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
-import systems.ajax.motrechko.airguardian.commonresponse.drone.Drone as ProtoDrone
 import systems.ajax.motrechko.airguardian.dto.response.toProtoDrone
 import systems.ajax.motrechko.airguardian.input.reqrepl.drone.get_all.proto.GetAllDronesRequest
 import systems.ajax.motrechko.airguardian.input.reqrepl.drone.get_all.proto.GetAllDronesResponse
 import systems.ajax.motrechko.airguardian.internalapi.NatsSubject.EmergencyRequest.GET_ALL
 import systems.ajax.motrechko.airguardian.service.DroneService
+import systems.ajax.motrechko.airguardian.commonresponse.drone.Drone as ProtoDrone
 
 @Component
 class GetAllDronesNatsController(
@@ -30,13 +30,13 @@ class GetAllDronesNatsController(
             }
     }
 
-    private fun buildSuccessResponse(deviceList: List<ProtoDrone>): GetAllDronesResponse =
+    private fun buildSuccessResponse(droneList: List<ProtoDrone>): GetAllDronesResponse =
         GetAllDronesResponse.newBuilder().apply {
-            successBuilder.addAllDrones(deviceList)
+            successBuilder.addAllDrones(droneList)
         }.build()
 
     private fun buildFailureResponse(exception: String, message: String): GetAllDronesResponse =
         GetAllDronesResponse.newBuilder().apply {
-            failureBuilder.setMessage("Devices find failed by $exception: $message")
+            failureBuilder.setMessage("Drone find failed by $exception: $message")
         }.build()
 }

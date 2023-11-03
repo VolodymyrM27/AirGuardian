@@ -16,7 +16,8 @@ class GlobalExceptionHandler {
     @ExceptionHandler(value = [
         DroneNotFoundException::class,
         DeliveryOrderNotFoundException::class,
-        DroneIsNotAvailableException::class
+        DroneIsNotAvailableException::class,
+        MonitoringObjectNotFoundException::class,
     ])
     fun notFoundException(request: ServerHttpRequest, exception: Exception): Mono<ApiError> =
         responseEntity(request.uri.path, exception.message, HttpStatus.NOT_FOUND)
