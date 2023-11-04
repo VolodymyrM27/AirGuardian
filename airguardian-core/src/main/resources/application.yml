@@ -1,5 +1,12 @@
 spring:
   data:
+    redis:
+      ttl:
+        minutes: 15
+      host: localhost
+      key:
+        prefix:
+          drone-key-
     mongodb:
       database: drone
       port: 27017
