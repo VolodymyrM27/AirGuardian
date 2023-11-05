@@ -7,15 +7,18 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import systems.ajax.motrechko.airguardian.beanPostProcessor.MyScheduled
+import systems.ajax.motrechko.airguardian.enums.BatteryApplicationStatus
 import systems.ajax.motrechko.airguardian.enums.DroneStatus
 import systems.ajax.motrechko.airguardian.kafka.DroneChargingApplicationKafkaProducer
 import systems.ajax.motrechko.airguardian.mapper.toProto
 import systems.ajax.motrechko.airguardian.model.BatteryApplication
 import systems.ajax.motrechko.airguardian.model.Drone
 import systems.ajax.motrechko.airguardian.repository.DroneRepository
+import java.time.LocalDateTime
 
 @Service
 class DroneBatteryCheckService(
+    private val droneBatteryApplicationService: DroneBatteryService,
     private val droneMongoRepository: DroneRepository,
     private val droneChargingApplicationKafkaProducer: DroneChargingApplicationKafkaProducer,
     @Value("\${air-guardian.battery-service.battery.level.for.charging}")
@@ -37,12 +40,15 @@ class DroneBatteryCheckService(
 
     private fun createApplicationForCharging(drone: Drone): Mono<Unit> {
         return droneMongoRepository.save(drone.copy(status = DroneStatus.NEED_TO_CHARGE))
-            .doOnNext {
+            .flatMap {
                 val application = BatteryApplication(
                     serviceMessage = "The drone needs to be charged, battery level is ${drone.batteryLevel}%.",
-                    droneId = drone.id.toHexString()
+                    droneId = drone.id.toHexString(),
+                    timestamp = LocalDateTime.now(),
+                    status = BatteryApplicationStatus.NEW
                 )
                 droneChargingApplicationKafkaProducer.sendBatteryChargingApplication(application.toProto())
+                    .then(droneBatteryApplicationService.saveBatteryApplication(application))
             }
             .doOnSuccess {
                 logger.info(
