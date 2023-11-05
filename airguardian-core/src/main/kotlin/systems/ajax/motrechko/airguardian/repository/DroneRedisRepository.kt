@@ -9,7 +9,6 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.switchIfEmptyDeferred
-import reactor.kotlin.core.publisher.toMono
 import systems.ajax.motrechko.airguardian.model.Drone
 import java.time.Duration
 
@@ -20,6 +19,7 @@ class DroneRedisRepository(
     @Value("\${spring.data.redis.key.prefix}") private val dronePrefix: String,
     @Value("\${spring.data.redis.ttl.minutes}") private val ttlMinutes: String
 ) : DroneCacheableRepository {
+
     override fun save(entity: Drone): Mono<Drone> =
         droneRepository.save(entity)
             .flatMap { savedDrone ->
@@ -29,7 +29,7 @@ class DroneRedisRepository(
                         savedDrone,
                         Duration.ofMinutes(ttlMinutes.toLong())
                     )
-                    .then(savedDrone.toMono())
+                    .thenReturn(savedDrone)
             }
 
     override fun findById(id: String): Mono<Drone> {

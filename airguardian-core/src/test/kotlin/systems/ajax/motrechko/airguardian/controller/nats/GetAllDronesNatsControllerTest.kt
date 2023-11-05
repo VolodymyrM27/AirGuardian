@@ -38,7 +38,7 @@ class GetAllDronesNatsControllerTest {
     private lateinit var reactiveRedisRepository: ReactiveRedisTemplate<String,Drone>
 
     @AfterEach
-    fun cleanAAfterTest() {
+    fun cleanAfterTest() {
         reactiveRedisRepository.delete(reactiveRedisRepository.keys("*")).block()
         reactiveMongoTemplate.remove(Query(), Drone::class.java).block()
     }
