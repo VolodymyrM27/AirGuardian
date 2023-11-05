@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package systems.ajax.motrechko.airguardian.input.reqrepl.application.get_charge_application;
+
+option java_multiple_files = true;
+
+import "systems/ajax/motrechko/airguardian/commonresponse/application/drone_battery_charging_application.proto";
+
+message GetAllApplicationRequest {
+
+}
+
+message GetAllApplicationResponse {
+  oneof response {
+    Success success = 1;
+    Failure failure = 2;
+  }
+
+  message Success {
+    repeated commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication application = 1;
+  }
+
+  message Failure {
+    string message = 100;
+  }
+}
