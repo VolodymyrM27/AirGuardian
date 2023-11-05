@@ -2,6 +2,7 @@ package systems.ajax.motrechko.airguardian.service
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -16,13 +17,15 @@ import systems.ajax.motrechko.airguardian.repository.DroneRepository
 @Service
 class DroneBatteryCheckService(
     private val droneMongoRepository: DroneRepository,
-    private val droneChargingApplicationKafkaProducer: DroneChargingApplicationKafkaProducer
+    private val droneChargingApplicationKafkaProducer: DroneChargingApplicationKafkaProducer,
+    @Value("\${air-guardian.battery-service.battery.level.for.charging}")
+    private val batteryLevelToCharging: Double
 ) {
     @MyScheduled(delay = 3000, period = 5000)
     fun checkTheBatteriesOfAllDrones() {
         val dronesFlux: Flux<Drone> = droneMongoRepository
             .findAllDronesWhereTheRemainingBatteryChargeIsLessThanAndHaveTheStatuses(
-                BATTERY_LEVEL_FOR_CHARGING,
+                batteryLevelToCharging,
                 listOf(DroneStatus.ACTIVE, DroneStatus.INACTIVE)
             )
 
@@ -52,7 +55,6 @@ class DroneBatteryCheckService(
     }
 
     companion object {
-        private const val BATTERY_LEVEL_FOR_CHARGING = 15.5
         private val logger: Logger = LoggerFactory.getLogger(DroneBatteryCheckService::class.java)
     }
 }

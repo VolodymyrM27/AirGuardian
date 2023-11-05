@@ -21,3 +21,10 @@ spring:
 nats:
   url: airguardian-nats-1
 
+air-guardian:
+  battery-service:
+    battery:
+      level:
+        for:
+          charging: 15.5
+
