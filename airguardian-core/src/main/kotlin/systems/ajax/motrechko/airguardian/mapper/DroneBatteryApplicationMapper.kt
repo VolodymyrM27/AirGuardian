@@ -1,11 +1,34 @@
 package systems.ajax.motrechko.airguardian.mapper
 
-import systems.ajax.motrechko.airguardian.commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication
+import systems.ajax.motrechko.airguardian.enums.BatteryApplicationStatus
 import systems.ajax.motrechko.airguardian.model.BatteryApplication
+import systems.ajax.motrechko.airguardian.commonresponse.application.drone_battery_charging_application.proto.BatteryApplicationStatus as ProtoBatteryApplicationStatus
+import systems.ajax.motrechko.airguardian.commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication as ProtoDroneBatteryChargingApplication
 
-fun BatteryApplication.toProto(): DroneBatteryChargingApplication {
-    return DroneBatteryChargingApplication.newBuilder()
+
+fun BatteryApplication.toProto(): ProtoDroneBatteryChargingApplication {
+    return ProtoDroneBatteryChargingApplication.newBuilder()
         .setServiceMessage(serviceMessage)
         .setDroneId(droneId)
+        .setTimestamp(timestamp.toProtoTimestampBuilder())
+        .setStatus(status.toProto())
+        .setId(id.toHexString())
         .build()
+}
+
+fun BatteryApplicationStatus.toProto(): ProtoBatteryApplicationStatus{
+    return when (this) {
+        BatteryApplicationStatus.NEW -> ProtoBatteryApplicationStatus.NEW
+        BatteryApplicationStatus.IN_PROGRESS -> ProtoBatteryApplicationStatus.IN_PROGRESS
+        BatteryApplicationStatus.COMPLETED -> ProtoBatteryApplicationStatus.COMPLETED
+    }
+}
+
+fun ProtoBatteryApplicationStatus.toEntity(): BatteryApplicationStatus{
+    return when (this) {
+        ProtoBatteryApplicationStatus.NEW -> BatteryApplicationStatus.NEW
+        ProtoBatteryApplicationStatus.IN_PROGRESS -> BatteryApplicationStatus.IN_PROGRESS
+        ProtoBatteryApplicationStatus.COMPLETED -> BatteryApplicationStatus.COMPLETED
+        else -> BatteryApplicationStatus.NEW
+    }
 }
