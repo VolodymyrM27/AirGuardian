@@ -9,9 +9,9 @@ import java.time.LocalDateTime
 @Document("charging_drone_battery_application")
 data class BatteryApplication(
     @Id
-    val id: ObjectId = ObjectId.get(),
+    val id: ObjectId = ObjectId(),
     val serviceMessage: String = "",
     val droneId: String = "",
-    val timestamp: LocalDateTime,
-    val status: BatteryApplicationStatus,
+    val timestamp: LocalDateTime = LocalDateTime.now(),
+    val status: BatteryApplicationStatus = BatteryApplicationStatus.NEW,
 )
