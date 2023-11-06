@@ -17,6 +17,13 @@ fun BatteryApplication.toProto(): ProtoDroneBatteryChargingApplication {
         .build()
 }
 
+fun BatteryApplication.toProtoList(): List<ProtoDroneBatteryChargingApplication> {
+    return listOf(this.toProto())
+}
+
+fun List<BatteryApplication>.toProtoList(): List<ProtoDroneBatteryChargingApplication> {
+    return this.map { it.toProto() }
+}
 
 fun List<BatteryApplication>.toDroneBatteryChargingApplicationEventList(): DroneBatteryChargingApplicationEventList{
     return DroneBatteryChargingApplicationEventList

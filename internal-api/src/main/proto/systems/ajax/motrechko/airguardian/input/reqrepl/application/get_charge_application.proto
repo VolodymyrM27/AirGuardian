@@ -25,11 +25,13 @@ message GetAllApplicationResponse {
     }
 
     message InitialState {
-      output.pubsub.application.drone_battery_charging_application.proto.DroneBatteryChargingApplicationEventList applicationList= 1;
+      output.pubsub.application.drone_battery_charging_application.proto.DroneBatteryChargingApplicationEventList applicationList_deprecated= 1 [deprecated = true];
+      repeated commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication applicationList = 2;
     }
 
     message NewState{
-      output.pubsub.application.drone_battery_charging_application.proto.DroneBatteryChargingApplicationEvent application = 1;
+      output.pubsub.application.drone_battery_charging_application.proto.DroneBatteryChargingApplicationEvent application_deprecated = 1 [deprecated = true];
+      commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication application = 2;
     }
   }
 

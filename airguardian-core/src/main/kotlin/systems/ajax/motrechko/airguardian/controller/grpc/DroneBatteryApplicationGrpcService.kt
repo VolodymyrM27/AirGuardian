@@ -4,15 +4,14 @@ import net.devh.boot.grpc.server.service.GrpcService
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import systems.ajax.motrechko.airguardian.ReactorChargingDroneBatteryApplicationGrpc
+import systems.ajax.motrechko.airguardian.commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication
 import systems.ajax.motrechko.airguardian.controller.nats.BatteryDroneChargingApplicationEventNatsController
 import systems.ajax.motrechko.airguardian.input.reqrepl.application.get_charge_application.GetAllApplicationRequest
 import systems.ajax.motrechko.airguardian.input.reqrepl.application.get_charge_application.GetAllApplicationResponse
 import systems.ajax.motrechko.airguardian.internalapi.NatsSubject
-import systems.ajax.motrechko.airguardian.mapper.toDroneBatteryChargingApplicationEventList
+import systems.ajax.motrechko.airguardian.mapper.toProtoList
 import systems.ajax.motrechko.airguardian.output.pubsub.application.drone_battery_charging_application.proto.DroneBatteryChargingApplicationEvent
-import systems.ajax.motrechko.airguardian.output.pubsub.application.drone_battery_charging_application.proto.DroneBatteryChargingApplicationEventList
 import systems.ajax.motrechko.airguardian.service.DroneBatteryService
-
 @GrpcService
 class DroneBatteryApplicationGrpcService(
     private val droneBatteryService: DroneBatteryService,
@@ -31,24 +30,28 @@ class DroneBatteryApplicationGrpcService(
                 batteryDroneChargingApplicationEventNatsController.subscribeToEvent(
                     NatsSubject.BatteryDroneChargingApplication.GET_ALL
                 )
-                    .map { event -> buildSuccessResponse(event) }
+                    .map { event -> buildSuccessResponse(event.application) }
                     .startWith(
-                        buildSuccessInitialStateResponse(initialState.toDroneBatteryChargingApplicationEventList())
+                        buildSuccessInitialStateResponse(initialState.toProtoList())
                     )
             }
     }
 
     private fun buildSuccessResponse(
-        droneApplication: DroneBatteryChargingApplicationEvent
+        droneApplication: DroneBatteryChargingApplication
     ): GetAllApplicationResponse =
         GetAllApplicationResponse.newBuilder().apply {
             successBuilder.newStateBuilder.setApplication(droneApplication)
         }.build()
 
     private fun buildSuccessInitialStateResponse(
-        droneApplicationList: DroneBatteryChargingApplicationEventList
-    ): GetAllApplicationResponse =
-        GetAllApplicationResponse.newBuilder().apply {
-            successBuilder.initialStateBuilder.setApplicationList(droneApplicationList)
+        droneApplicationList: List<DroneBatteryChargingApplication>
+    ): GetAllApplicationResponse {
+         var debug =  GetAllApplicationResponse.newBuilder().apply {
+            successBuilder.initialStateBuilder.addAllApplicationList(droneApplicationList)
         }.build()
+        println(debug)
+        return debug
+    }
 }
+
