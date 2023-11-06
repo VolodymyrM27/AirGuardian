@@ -2,6 +2,6 @@ package systems.ajax.motrechko.airguardian.internalapi
 
 object KafkaTopic {
 
-    const val EMERGENCY_PREFIX = "${MessageType.EVENT_PREFIX}.drone.charging.application";
+    const val CHARGING_EVENT = "${MessageType.EVENT_PREFIX}.drone.charging.application";
 
 }
