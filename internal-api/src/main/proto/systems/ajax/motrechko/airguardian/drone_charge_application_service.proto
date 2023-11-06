@@ -1,7 +1,5 @@
 package systems.ajax.motrechko.airguardian;
 
-option java_multiple_files = true;
-
 import "systems/ajax/motrechko/airguardian/input/reqrepl/application/get_charge_application.proto";
 
 
