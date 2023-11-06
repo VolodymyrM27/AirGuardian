@@ -8,23 +8,26 @@ import systems.ajax.motrechko.airguardian.dto.response.toResponse
 import systems.ajax.motrechko.airguardian.enums.DroneStatus
 import systems.ajax.motrechko.airguardian.exception.DroneNotFoundException
 import systems.ajax.motrechko.airguardian.model.Drone
+import systems.ajax.motrechko.airguardian.repository.DroneCacheableRepository
 import systems.ajax.motrechko.airguardian.repository.DroneRepository
 
 @Service
 class DroneService(
-    private val droneRepository: DroneRepository
+    private val droneRepository: DroneRepository,
+    private val droneCacheableRepository: DroneCacheableRepository
 ) {
-    fun getAllDrones(): Flux<DroneResponse> = droneRepository
+    fun getAllDrones(): Flux<DroneResponse> = droneCacheableRepository
         .findAll()
         .map { it.toResponse() }
 
     fun getDroneById(id: String): Mono<Drone> =
-        droneRepository.findById(id).switchIfEmpty(Mono.error(DroneNotFoundException("Drone with id $id not found")))
+        droneCacheableRepository.findById(id)
+            .switchIfEmpty(Mono.error(DroneNotFoundException("Drone with id $id not found")))
 
-    fun createDrone(drone: Drone): Mono<Drone> = droneRepository.save(drone)
+    fun createDrone(drone: Drone): Mono<Drone> = droneCacheableRepository.save(drone)
 
     fun deleteDroneById(id: String): Mono<Unit> {
-        return droneRepository.deleteById(id)
+        return droneCacheableRepository.deleteById(id)
             .handle { deletedResult, sink ->
                 if (deletedResult.deletedCount > 0) {
                     sink.next(Unit)

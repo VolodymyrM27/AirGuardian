@@ -11,6 +11,7 @@ plugins {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive:3.1.3")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis:3.1.5")
 
     implementation("org.springframework.kafka:spring-kafka:3.0.12")
     implementation("io.projectreactor.kafka:reactor-kafka:1.3.21")
