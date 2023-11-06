@@ -5,6 +5,7 @@ package systems.ajax.motrechko.airguardian.input.reqrepl.application.get_charge_
 option java_multiple_files = true;
 
 import "systems/ajax/motrechko/airguardian/commonresponse/application/drone_battery_charging_application.proto";
+import "systems/ajax/motrechko/airguardian/output/pubsub/application/drone_battery_charging_application_event.proto";
 
 message GetAllApplicationRequest {
 
@@ -17,7 +18,20 @@ message GetAllApplicationResponse {
   }
 
   message Success {
-    repeated commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication application = 1;
+
+    oneof state{
+      InitialState initialState = 1;
+      NewState newState = 2;
+    }
+
+    message InitialState {
+      output.pubsub.application.drone_battery_charging_application.proto.DroneBatteryChargingApplicationEvent application = 1;
+    }
+
+    message NewState{
+      output.pubsub.application.drone_battery_charging_application.proto.DroneBatteryChargingApplicationEventList applicationList= 1;
+
+    }
   }
 
   message Failure {
