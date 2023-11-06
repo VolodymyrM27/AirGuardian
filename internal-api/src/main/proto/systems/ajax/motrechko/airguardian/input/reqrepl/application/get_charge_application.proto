@@ -7,11 +7,10 @@ option java_multiple_files = true;
 import "systems/ajax/motrechko/airguardian/commonresponse/application/drone_battery_charging_application.proto";
 import "systems/ajax/motrechko/airguardian/output/pubsub/application/drone_battery_charging_application_event.proto";
 
-message GetAllApplicationRequest {
-
+message GetAllApplicationsRequest {
 }
 
-message GetAllApplicationResponse {
+message GetAllApplicationsResponse {
   oneof response {
     Success success = 1;
     Failure failure = 2;
@@ -19,19 +18,17 @@ message GetAllApplicationResponse {
 
   message Success {
 
-    oneof state{
-      InitialState initialState = 1;
+    oneof state {
+      ChargingApplicationUpdate initialState = 1;
       NewState newState = 2;
     }
 
-    message InitialState {
-      output.pubsub.application.drone_battery_charging_application.proto.DroneBatteryChargingApplicationEventList applicationList_deprecated= 1 [deprecated = true];
-      repeated commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication applicationList = 2;
+    message ChargingApplicationUpdate {
+      repeated commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication applicationList = 1;
     }
 
-    message NewState{
-      output.pubsub.application.drone_battery_charging_application.proto.DroneBatteryChargingApplicationEvent application_deprecated = 1 [deprecated = true];
-      commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication application = 2;
+    message NewState {
+      commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication application = 1;
     }
   }
 

@@ -10,19 +10,19 @@ import systems.ajax.motrechko.airguardian.internalapi.NatsSubject
 import systems.ajax.motrechko.airguardian.output.pubsub.application.drone_battery_charging_application.proto.DroneBatteryChargingApplicationEvent
 
 @Component
-class BatteryDroneChargingApplicationEventNatsControllerImpl(
+class BatteryDroneChargingApplicationEventNatsPublisherImpl(
     private val connection: Connection
-) : BatteryDroneChargingApplicationEventNatsController<DroneBatteryChargingApplicationEvent> {
+) : BatteryDroneChargingApplicationEventNatsPublisher<DroneBatteryChargingApplicationEvent> {
 
     override val parser: Parser<DroneBatteryChargingApplicationEvent> =
         DroneBatteryChargingApplicationEvent.parser()
 
     override val dispatcher: Dispatcher = connection.createDispatcher()
+
     override fun subscribeToEvent(eventType: String): Flux<DroneBatteryChargingApplicationEvent> =
         Flux.create { sink ->
             dispatcher.apply {
-                subscribe(NatsSubject.BatteryDroneChargingApplication.GET_ALL)
-                { message ->
+                subscribe(NatsSubject.BatteryDroneChargingApplication.PUBLISH_NEW_APPLICATION) { message ->
                     val parsedData = parser.parseFrom(message.data)
                     sink.next(parsedData)
                 }
@@ -31,9 +31,12 @@ class BatteryDroneChargingApplicationEventNatsControllerImpl(
 
     override fun publishEvent(batteryChargingApplication: DroneBatteryChargingApplication) {
         val eventMessage = DroneBatteryChargingApplicationEvent.newBuilder().apply {
-           setApplication(batteryChargingApplication)
+            setApplication(batteryChargingApplication)
         }.build()
 
-        connection.publish(NatsSubject.BatteryDroneChargingApplication.GET_ALL, eventMessage.toByteArray())
+        connection.publish(
+            NatsSubject.BatteryDroneChargingApplication.PUBLISH_NEW_APPLICATION,
+            eventMessage.toByteArray()
+        )
     }
 }

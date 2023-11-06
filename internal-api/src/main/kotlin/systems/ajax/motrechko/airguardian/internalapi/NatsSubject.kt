@@ -9,7 +9,7 @@ object NatsSubject {
         private const val BATTERY_DRONE_CHARGING_APPLICATION_PREFIX =
             "$EVENT_PREFIX.battery_drone_charging_application"
 
-        const val GET_ALL = "$BATTERY_DRONE_CHARGING_APPLICATION_PREFIX.get_all"
+        const val PUBLISH_NEW_APPLICATION = "$BATTERY_DRONE_CHARGING_APPLICATION_PREFIX.get_all"
     }
 
     object EmergencyRequest {

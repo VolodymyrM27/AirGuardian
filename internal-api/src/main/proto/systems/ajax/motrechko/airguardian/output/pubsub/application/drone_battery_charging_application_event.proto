@@ -12,5 +12,5 @@ message DroneBatteryChargingApplicationEvent{
 }
 
 message DroneBatteryChargingApplicationEventList{
-  repeated  commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication applications = 1;
+  repeated commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication applications = 1;
 }
