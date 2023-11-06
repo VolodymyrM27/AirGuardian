@@ -12,21 +12,22 @@ import systems.ajax.motrechko.airguardian.internalapi.NatsSubject
 import systems.ajax.motrechko.airguardian.mapper.toProtoList
 import systems.ajax.motrechko.airguardian.output.pubsub.application.drone_battery_charging_application.proto.DroneBatteryChargingApplicationEvent
 import systems.ajax.motrechko.airguardian.service.DroneBatteryService
+
 @GrpcService
 class DroneBatteryApplicationGrpcService(
     private val droneBatteryService: DroneBatteryService,
     private val batteryDroneChargingApplicationEventNatsController:
-        BatteryDroneChargingApplicationEventNatsController<DroneBatteryChargingApplicationEvent>,
-): ReactorChargingDroneBatteryApplicationGrpc.ChargingDroneBatteryApplicationImplBase() {
+    BatteryDroneChargingApplicationEventNatsController<DroneBatteryChargingApplicationEvent>,
+) : ReactorChargingDroneBatteryApplicationGrpc.ChargingDroneBatteryApplicationImplBase() {
     override fun getBatteryChargingApplication(request: Mono<GetAllApplicationRequest>)
-    : Flux<GetAllApplicationResponse> {
+            : Flux<GetAllApplicationResponse> {
         return request.flatMapMany { handleBatteryChargingApplication() }
     }
 
     private fun handleBatteryChargingApplication(): Flux<GetAllApplicationResponse> {
         return droneBatteryService.getBatteryApplications()
             .collectList()
-            .flatMapMany {initialState ->
+            .flatMapMany { initialState ->
                 batteryDroneChargingApplicationEventNatsController.subscribeToEvent(
                     NatsSubject.BatteryDroneChargingApplication.GET_ALL
                 )
@@ -46,12 +47,7 @@ class DroneBatteryApplicationGrpcService(
 
     private fun buildSuccessInitialStateResponse(
         droneApplicationList: List<DroneBatteryChargingApplication>
-    ): GetAllApplicationResponse {
-         var debug =  GetAllApplicationResponse.newBuilder().apply {
-            successBuilder.initialStateBuilder.addAllApplicationList(droneApplicationList)
-        }.build()
-        println(debug)
-        return debug
-    }
+    ): GetAllApplicationResponse = GetAllApplicationResponse.newBuilder().apply {
+        successBuilder.initialStateBuilder.addAllApplicationList(droneApplicationList)
+    }.build()
 }
-
