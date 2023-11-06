@@ -2,6 +2,7 @@ package systems.ajax.motrechko.airguardian.mapper
 
 import systems.ajax.motrechko.airguardian.enums.BatteryApplicationStatus
 import systems.ajax.motrechko.airguardian.model.BatteryApplication
+import systems.ajax.motrechko.airguardian.output.pubsub.application.drone_battery_charging_application.proto.DroneBatteryChargingApplicationEventList
 import systems.ajax.motrechko.airguardian.commonresponse.application.drone_battery_charging_application.proto.BatteryApplicationStatus as ProtoBatteryApplicationStatus
 import systems.ajax.motrechko.airguardian.commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication as ProtoDroneBatteryChargingApplication
 
@@ -13,6 +14,14 @@ fun BatteryApplication.toProto(): ProtoDroneBatteryChargingApplication {
         .setTimestamp(timestamp.toProtoTimestampBuilder())
         .setStatus(status.toProto())
         .setId(id.toHexString())
+        .build()
+}
+
+
+fun List<BatteryApplication>.toDroneBatteryChargingApplicationEventList(): DroneBatteryChargingApplicationEventList{
+    return DroneBatteryChargingApplicationEventList
+        .newBuilder()
+        .addAllApplications(this.map { it.toProto() })
         .build()
 }
 
