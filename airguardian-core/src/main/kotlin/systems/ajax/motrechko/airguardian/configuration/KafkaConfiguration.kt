@@ -29,7 +29,7 @@ class KafkaConfiguration(
         createKafkaSender(producerProperties())
 
     @Bean
-    fun droneChargingApplicationKafkaReceiver(): KafkaReceiver<String, DroneBatteryChargingApplicationEvent> {
+    fun kafkaReceiverDroneChargingApplication(): KafkaReceiver<String, DroneBatteryChargingApplicationEvent> {
         val customProperties: MutableMap<String, Any> = mutableMapOf(
             KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE to
                     DroneBatteryChargingApplicationEvent::class.java.name
