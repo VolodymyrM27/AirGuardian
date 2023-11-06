@@ -23,13 +23,7 @@ class DroneRedisRepository(
     override fun save(entity: Drone): Mono<Drone> =
         droneRepository.save(entity)
             .flatMap { savedDrone ->
-                reactiveRedisRepository.opsForValue()
-                    .set(
-                        dronePrefix + savedDrone.id.toHexString(),
-                        savedDrone,
-                        Duration.ofMinutes(ttlMinutes.toLong())
-                    )
-                    .thenReturn(savedDrone)
+                  saveDroneToRedisCache(savedDrone)
             }
 
     override fun findById(id: String): Mono<Drone> {
