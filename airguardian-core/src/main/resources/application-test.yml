@@ -7,5 +7,12 @@ spring:
       password: secret
       username: root
       authentication-database: admin
+    redis:
+      host: localhost
+      ttl:
+        minutes: 15
+      key:
+        prefix:
+          drone-key-
 nats:
   url: nats://localhost:4222
