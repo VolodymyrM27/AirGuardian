@@ -10,3 +10,7 @@ import "systems/ajax/motrechko/airguardian/commonresponse/application/drone_batt
 message DroneBatteryChargingApplicationEvent{
   commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication application = 1;
 }
+
+message DroneBatteryChargingApplicationEventList{
+  repeated commonresponse.application.drone_battery_charging_application.proto.DroneBatteryChargingApplication applications = 1;
+}

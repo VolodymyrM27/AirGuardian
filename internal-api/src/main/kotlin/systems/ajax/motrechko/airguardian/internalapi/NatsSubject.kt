@@ -1,9 +1,16 @@
 package systems.ajax.motrechko.airguardian.internalapi
 
-object NatsSubject {
-    private const val REQUEST_PREFIX = "systems.ajax.motrechko.airguardian.input.request"
+import systems.ajax.motrechko.airguardian.internalapi.MessageType.EVENT_PREFIX
+import systems.ajax.motrechko.airguardian.internalapi.MessageType.REQUEST_PREFIX
 
-    private const val EVENT_PREFIX = "systems.ajax.motrechko.airguardian.output.pubsub"
+object NatsSubject {
+
+    object BatteryDroneChargingApplication {
+        private const val BATTERY_DRONE_CHARGING_APPLICATION_PREFIX =
+            "$EVENT_PREFIX.battery_drone_charging_application"
+
+        const val NEW_APPLICATION = "$BATTERY_DRONE_CHARGING_APPLICATION_PREFIX.event.new_application"
+    }
 
     object EmergencyRequest {
         private const val EMERGENCY_PREFIX = "$REQUEST_PREFIX.emergency"

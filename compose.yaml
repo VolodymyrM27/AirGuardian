@@ -2,14 +2,16 @@ services:
   airguardian:
     build: .
     depends_on:
-      mongodb:
-        condition: service_healthy
       nats:
         condition: service_started
+      redis-air-guardian:
+          condition: service_started
+      mongodb:
+          condition: service_healthy
       kafka1:
-        condition: service_started
+          condition: service_started
       schema-registry:
-        condition: service_started
+          condition: service_started
     ports:
       - 8080:8080
 
@@ -43,8 +45,7 @@ services:
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka1:9093
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-    volumes:
-      - kafka-data:/var/lib/kafka/data
+
   schema-registry:
     image: confluentinc/cp-schema-registry:7.5.1
     ports:
@@ -62,5 +63,3 @@ services:
 
 volumes:
   mongo-data:
-  kafka-data:
-

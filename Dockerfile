@@ -7,7 +7,7 @@ ENV APP_DIR=/app
 RUN mkdir $APP_DIR
 WORKDIR $APP_DIR
 
-COPY build/libs/airGuardian-*.jar $APP_DIR/app.jar
+COPY airguardian-core/build/libs/airguardian-core-*.jar $APP_DIR/app.jar
 
 EXPOSE 8080
 

@@ -3,10 +3,11 @@ spring:
     redis:
       ttl:
         minutes: 15
-      host: localhost
+      host: airguardian-redis-air-guardian-1
       key:
         prefix:
           drone-key-
+
     mongodb:
       database: drone
       port: 27017
@@ -14,10 +15,19 @@ spring:
       password: secret
       username: root
       authentication-database: admin
+
   kafka:
-    bootstrap-servers: http://airguardian-kafka-1:9092
+    bootstrap-servers: http://airguardian-kafka1-1:29092
     properties:
       schema.registry.url: http://airguardian-schema-registry-1:8081
+
 nats:
   url: airguardian-nats-1
+
+air-guardian:
+  battery-service:
+    battery:
+      level:
+        for:
+          charging: 15.5
 

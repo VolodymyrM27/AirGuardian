@@ -1,0 +1,9 @@
+package systems.ajax.motrechko.airguardian;
+
+import "systems/ajax/motrechko/airguardian/input/reqrepl/application/get_charge_application.proto";
+
+
+service ChargingDroneBatteryApplication {
+    rpc getBatteryChargingApplication(input.reqrepl.application.get_charge_application.GetAllApplicationsRequest)
+        returns (stream input.reqrepl.application.get_charge_application.GetAllApplicationsResponse);
+}
