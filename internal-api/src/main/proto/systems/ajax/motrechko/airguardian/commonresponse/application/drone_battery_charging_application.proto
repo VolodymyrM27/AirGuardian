@@ -6,7 +6,7 @@ import "google/protobuf/timestamp.proto";
 
 option java_multiple_files = true;
 
-message DroneBatteryChargingApplication{
+message DroneBatteryChargingApplication {
   string droneId = 1;
   string serviceMessage = 2;
   google.protobuf.Timestamp timestamp = 3;
@@ -14,7 +14,7 @@ message DroneBatteryChargingApplication{
   optional string id = 5;
 }
 
-enum BatteryApplicationStatus{
+enum BatteryApplicationStatus {
     BATTERY_APPLICATION_STATUS_UNSPECIFIED = 0;
     NEW = 1;
     IN_PROGRESS = 2;

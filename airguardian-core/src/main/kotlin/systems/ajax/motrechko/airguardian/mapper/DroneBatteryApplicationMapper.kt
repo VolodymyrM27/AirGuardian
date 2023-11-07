@@ -45,6 +45,6 @@ fun ProtoBatteryApplicationStatus.toEntity(): BatteryApplicationStatus{
         ProtoBatteryApplicationStatus.NEW -> BatteryApplicationStatus.NEW
         ProtoBatteryApplicationStatus.IN_PROGRESS -> BatteryApplicationStatus.IN_PROGRESS
         ProtoBatteryApplicationStatus.COMPLETED -> BatteryApplicationStatus.COMPLETED
-        else -> throw IllegalArgumentException("Unknown BatteryApplicationStatus")
+        else -> error("Unknown BatteryApplicationStatus: $this")
     }
 }

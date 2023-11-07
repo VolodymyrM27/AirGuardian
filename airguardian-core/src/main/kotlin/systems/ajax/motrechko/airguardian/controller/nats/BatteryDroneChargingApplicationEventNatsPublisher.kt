@@ -11,6 +11,7 @@ interface BatteryDroneChargingApplicationEventNatsPublisher<Event: GeneratedMess
     val parser: Parser<Event>
 
     val dispatcher: Dispatcher
+
     fun subscribeToEvent(eventType: String): Flux<Event>
 
     fun publishEvent(batteryChargingApplication: DroneBatteryChargingApplication)

@@ -3,7 +3,7 @@ spring:
     redis:
       ttl:
         minutes: 15
-      host: localhost
+      host: airguardian-redis-air-guardian-1
       key:
         prefix:
           drone-key-
