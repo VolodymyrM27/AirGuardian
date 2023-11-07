@@ -22,7 +22,7 @@ class BatteryDroneChargingApplicationEventNatsPublisherImpl(
     override fun subscribeToEvent(eventType: String): Flux<DroneBatteryChargingApplicationEvent> =
         Flux.create { sink ->
             dispatcher.apply {
-                subscribe(NatsSubject.BatteryDroneChargingApplication.PUBLISH_NEW_APPLICATION) { message ->
+                subscribe(NatsSubject.BatteryDroneChargingApplication.NEW_APPLICATION) { message ->
                     val parsedData = parser.parseFrom(message.data)
                     sink.next(parsedData)
                 }
@@ -35,7 +35,7 @@ class BatteryDroneChargingApplicationEventNatsPublisherImpl(
         }.build()
 
         connection.publish(
-            NatsSubject.BatteryDroneChargingApplication.PUBLISH_NEW_APPLICATION,
+            NatsSubject.BatteryDroneChargingApplication.NEW_APPLICATION,
             eventMessage.toByteArray()
         )
     }

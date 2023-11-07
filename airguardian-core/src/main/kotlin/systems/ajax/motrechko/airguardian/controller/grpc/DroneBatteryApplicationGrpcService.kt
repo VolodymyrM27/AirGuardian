@@ -30,7 +30,7 @@ class DroneBatteryApplicationGrpcService(
             .collectList()
             .flatMapMany { initialState ->
                 batteryDroneChargingApplicationEventNatsController.subscribeToEvent(
-                    NatsSubject.BatteryDroneChargingApplication.PUBLISH_NEW_APPLICATION
+                    NatsSubject.BatteryDroneChargingApplication.NEW_APPLICATION
                 )
                     .map { event -> buildSuccessResponse(event.application) }
                     .startWith(
