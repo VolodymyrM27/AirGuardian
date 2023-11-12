@@ -2,34 +2,36 @@ package systems.ajax.motrechko.airguardian.controller.nats
 
 
 import io.nats.client.Connection
+import org.assertj.core.api.Assertions.assertThat
 import org.bson.types.ObjectId
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.test.context.ActiveProfiles
-import systems.ajax.motrechko.airguardian.enums.EmergencyEventStatus
-import systems.ajax.motrechko.airguardian.enums.EmergencyEventType.SHOOTING
+import systems.ajax.motrechko.airguardian.core.infrastructure.mapper.toProtoTimestampBuilder
+import systems.ajax.motrechko.airguardian.core.shared.Coordinates
+import systems.ajax.motrechko.airguardian.drone.application.port.DroneRepositoryOutPort
+import systems.ajax.motrechko.airguardian.drone.infrastructure.adapters.repository.entity.MongoDrone
+import systems.ajax.motrechko.airguardian.drone.infrastructure.mapper.toDrone
+import systems.ajax.motrechko.airguardian.emergencyevent.domain.EmergencyEvent
+import systems.ajax.motrechko.airguardian.emergencyevent.domain.EmergencyEventStatus
+import systems.ajax.motrechko.airguardian.emergencyevent.domain.EmergencyEventType.SHOOTING
+import systems.ajax.motrechko.airguardian.emergencyevent.infrastructure.adapters.repository.entity.MongoEmergencyEvent
+import systems.ajax.motrechko.airguardian.emergencyevent.infrastructure.mapper.toProtoEmergencyEvent
+import systems.ajax.motrechko.airguardian.emergencyevent.infrastructure.mapper.toResponse
 import systems.ajax.motrechko.airguardian.input.reqrepl.emergencyevent.new_event.proto.EmergencyEventRequest
 import systems.ajax.motrechko.airguardian.input.reqrepl.emergencyevent.new_event.proto.EmergencyEventResponse
 import systems.ajax.motrechko.airguardian.internalapi.NatsSubject
-import systems.ajax.motrechko.airguardian.mapper.toProtoEmergencyEvent
-import systems.ajax.motrechko.airguardian.mapper.toProtoTimestampBuilder
-import systems.ajax.motrechko.airguardian.mapper.toResponse
-import systems.ajax.motrechko.airguardian.model.Coordinates
-import systems.ajax.motrechko.airguardian.model.Drone
-import systems.ajax.motrechko.airguardian.commonresponse.event.EmergencyEvent as ProtoEmergencyEvent
-import systems.ajax.motrechko.airguardian.commonresponse.event.EmergencyEventType as ProtoEmergencyEventType
-import systems.ajax.motrechko.airguardian.commonresponse.event.EmergencyEventStatus as ProtoEmergencyEventStatus
-import com.google.type.LatLng as ProtoCoordinates
-import systems.ajax.motrechko.airguardian.model.EmergencyEvent
-import systems.ajax.motrechko.airguardian.repository.DroneRepository
 import systems.ajax.motrechko.airguardian.utils.TestUtils
 import systems.ajax.motrechko.airguardian.utils.TestUtils.doRequest
 import java.time.LocalDateTime
+import com.google.type.LatLng as ProtoCoordinates
+import systems.ajax.motrechko.airguardian.commonresponse.event.EmergencyEvent as ProtoEmergencyEvent
+import systems.ajax.motrechko.airguardian.commonresponse.event.EmergencyEventStatus as ProtoEmergencyEventStatus
+import systems.ajax.motrechko.airguardian.commonresponse.event.EmergencyEventType as ProtoEmergencyEventType
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -41,13 +43,13 @@ class EmergencyEventProcessNatsControllerTest {
     private lateinit var reactiveMongoTemplate: ReactiveMongoTemplate
 
     @Autowired
-    private lateinit var droneRepository: DroneRepository
+    private lateinit var droneRepository: DroneRepositoryOutPort
 
     @AfterEach
     fun cleanDB() {
-        reactiveMongoTemplate.remove(Query(), Drone::class.java)
+        reactiveMongoTemplate.remove(Query(), MongoDrone::class.java)
             .block()
-        reactiveMongoTemplate.remove(Query(), EmergencyEvent::class.java)
+        reactiveMongoTemplate.remove(Query(), MongoEmergencyEvent::class.java)
             .block()
     }
 
@@ -71,13 +73,13 @@ class EmergencyEventProcessNatsControllerTest {
             .build()
 
         val expectedEmergencyEvent = EmergencyEvent(
-            id = ObjectId("123456789101123456789101"),
+            id = "123456789101123456789101",
             eventType = SHOOTING,
             location = Coordinates(40.7128, -74.006),
             timestamp = currentTime,
             description = "Shooting in street",
             emergencyEventStatus = EmergencyEventStatus.DRONE_ON_THE_WAY,
-            droneId = ObjectId(TestUtils.DRONE_TWO.id.toHexString())
+            droneId = TestUtils.DRONE_TWO.id
         )
 
 
@@ -101,6 +103,7 @@ class EmergencyEventProcessNatsControllerTest {
     }
 
     @Test
+    @Suppress("MaxLineLength")
     fun `should return failed response when emergencyService process new event and couldn't find the right drones`() {
         // GIVEN
         setUpForFailedCase()
@@ -123,8 +126,8 @@ class EmergencyEventProcessNatsControllerTest {
             .setFailure(
                 EmergencyEventResponse.Failure.newBuilder()
                     .setMessage(
-                        "No available drones were found: DroneIsNotAvailableException: " +
-                                "systems.ajax.motrechko.airguardian.exception.DroneIsNotAvailableException: " +
+                        "No available drones were found: DroneIsNotAvailableException: "
+                                + "systems.ajax.motrechko.airguardian.core.application.exception.DroneIsNotAvailableException: " +
                                 "No available drones were found for event: SHOOTING"
                     )
             )
@@ -138,19 +141,18 @@ class EmergencyEventProcessNatsControllerTest {
             EmergencyEventResponse.parser()
         )
         // THEN
-        assertThat(actual).isEqualTo(expectedResponse)
-
+       assertThat(actual).isEqualTo(expectedResponse)
     }
 
     private fun setUpForSuccessCase() {
-        droneRepository.save(TestUtils.DRONE_ONE)
-            .then(droneRepository.save(TestUtils.DRONE_TWO))
-            .then(droneRepository.save(TestUtils.DRONE_THREE))
+        droneRepository.save(TestUtils.DRONE_ONE.toDrone())
+            .then(droneRepository.save(TestUtils.DRONE_TWO.toDrone()))
+            .then(droneRepository.save(TestUtils.DRONE_THREE.toDrone()))
             .block()
     }
 
     private fun setUpForFailedCase() {
-        droneRepository.save(TestUtils.DRONE_THREE)
+        droneRepository.save(TestUtils.DRONE_THREE.toDrone())
             .block()
     }
 }

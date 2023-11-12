@@ -11,13 +11,13 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.test.context.ActiveProfiles
-import systems.ajax.motrechko.airguardian.dto.response.toProtoDrone
-import systems.ajax.motrechko.airguardian.dto.response.toResponse
+import systems.ajax.motrechko.airguardian.drone.application.port.DroneRepositoryOutPort
+import systems.ajax.motrechko.airguardian.drone.infrastructure.adapters.repository.entity.MongoDrone
+import systems.ajax.motrechko.airguardian.drone.infrastructure.mapper.toDrone
+import systems.ajax.motrechko.airguardian.drone.infrastructure.mapper.toProtoDrone
 import systems.ajax.motrechko.airguardian.input.reqrepl.drone.get_all.proto.GetAllDronesRequest
 import systems.ajax.motrechko.airguardian.input.reqrepl.drone.get_all.proto.GetAllDronesResponse
 import systems.ajax.motrechko.airguardian.internalapi.NatsSubject
-import systems.ajax.motrechko.airguardian.model.Drone
-import systems.ajax.motrechko.airguardian.repository.DroneRepository
 import systems.ajax.motrechko.airguardian.utils.TestUtils
 import systems.ajax.motrechko.airguardian.utils.TestUtils.doRequest
 
@@ -32,23 +32,23 @@ class GetAllDronesNatsControllerTest {
     private lateinit var reactiveMongoTemplate: ReactiveMongoTemplate
 
     @Autowired
-    private lateinit var droneRepository: DroneRepository
+    private lateinit var droneRepository: DroneRepositoryOutPort
 
     @Autowired
-    private lateinit var reactiveRedisRepository: ReactiveRedisTemplate<String,Drone>
+    private lateinit var reactiveRedisRepository: ReactiveRedisTemplate<String,MongoDrone>
 
     @AfterEach
     fun cleanAfterTest() {
         reactiveRedisRepository.delete(reactiveRedisRepository.keys("*")).block()
-        reactiveMongoTemplate.remove(Query(), Drone::class.java).block()
+        reactiveMongoTemplate.remove(Query(), MongoDrone::class.java).block()
     }
 
     @BeforeEach
     fun setUp() {
         reactiveRedisRepository.delete(reactiveRedisRepository.keys("*")).block()
-        droneRepository.save(TestUtils.DRONE_ONE)
-            .then(droneRepository.save(TestUtils.DRONE_TWO))
-            .then(droneRepository.save(TestUtils.DRONE_THREE))
+        droneRepository.save(TestUtils.DRONE_ONE.toDrone())
+            .then(droneRepository.save(TestUtils.DRONE_TWO.toDrone()))
+            .then(droneRepository.save(TestUtils.DRONE_THREE.toDrone()))
             .block()
     }
 
@@ -57,7 +57,7 @@ class GetAllDronesNatsControllerTest {
         // GIVEN
         val request = GetAllDronesRequest.getDefaultInstance()
 
-        val protoDroneList = droneRepository.findAll().map { it.toResponse().toProtoDrone() }
+        val protoDroneList = droneRepository.findAll().map { it.toProtoDrone() }
             .collectList()
             .block()
 
@@ -66,7 +66,6 @@ class GetAllDronesNatsControllerTest {
         val expectedResponse = GetAllDronesResponse.newBuilder().apply {
             successBuilder.addAllDrones(protoDroneList)
         }.build()
-        println("this is expected response: $expectedResponse")
         // WHEN
         val actual = doRequest(
             natsConnection,
