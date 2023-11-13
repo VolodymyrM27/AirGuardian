@@ -13,7 +13,6 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.test.context.ActiveProfiles
 import systems.ajax.motrechko.airguardian.drone.application.port.DroneRepositoryOutPort
 import systems.ajax.motrechko.airguardian.drone.infrastructure.adapters.repository.entity.MongoDrone
-import systems.ajax.motrechko.airguardian.drone.infrastructure.mapper.toDrone
 import systems.ajax.motrechko.airguardian.drone.infrastructure.mapper.toProtoDrone
 import systems.ajax.motrechko.airguardian.input.reqrepl.drone.get_all.proto.GetAllDronesRequest
 import systems.ajax.motrechko.airguardian.input.reqrepl.drone.get_all.proto.GetAllDronesResponse
@@ -46,9 +45,9 @@ class GetAllDronesNatsControllerTest {
     @BeforeEach
     fun setUp() {
         reactiveRedisRepository.delete(reactiveRedisRepository.keys("*")).block()
-        droneRepository.save(TestUtils.DRONE_ONE.toDrone())
-            .then(droneRepository.save(TestUtils.DRONE_TWO.toDrone()))
-            .then(droneRepository.save(TestUtils.DRONE_THREE.toDrone()))
+        droneRepository.save(TestUtils.DRONE_ONE)
+            .then(droneRepository.save(TestUtils.DRONE_TWO))
+            .then(droneRepository.save(TestUtils.DRONE_THREE))
             .block()
     }
 

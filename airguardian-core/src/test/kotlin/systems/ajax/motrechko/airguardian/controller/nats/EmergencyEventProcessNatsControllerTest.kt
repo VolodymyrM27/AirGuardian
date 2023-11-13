@@ -15,7 +15,6 @@ import systems.ajax.motrechko.airguardian.core.infrastructure.mapper.toProtoTime
 import systems.ajax.motrechko.airguardian.core.shared.Coordinates
 import systems.ajax.motrechko.airguardian.drone.application.port.DroneRepositoryOutPort
 import systems.ajax.motrechko.airguardian.drone.infrastructure.adapters.repository.entity.MongoDrone
-import systems.ajax.motrechko.airguardian.drone.infrastructure.mapper.toDrone
 import systems.ajax.motrechko.airguardian.emergencyevent.domain.EmergencyEvent
 import systems.ajax.motrechko.airguardian.emergencyevent.domain.EmergencyEventStatus
 import systems.ajax.motrechko.airguardian.emergencyevent.domain.EmergencyEventType.SHOOTING
@@ -145,14 +144,14 @@ class EmergencyEventProcessNatsControllerTest {
     }
 
     private fun setUpForSuccessCase() {
-        droneRepository.save(TestUtils.DRONE_ONE.toDrone())
-            .then(droneRepository.save(TestUtils.DRONE_TWO.toDrone()))
-            .then(droneRepository.save(TestUtils.DRONE_THREE.toDrone()))
+        droneRepository.save(TestUtils.DRONE_ONE)
+            .then(droneRepository.save(TestUtils.DRONE_TWO))
+            .then(droneRepository.save(TestUtils.DRONE_THREE))
             .block()
     }
 
     private fun setUpForFailedCase() {
-        droneRepository.save(TestUtils.DRONE_THREE.toDrone())
+        droneRepository.save(TestUtils.DRONE_THREE)
             .block()
     }
 }

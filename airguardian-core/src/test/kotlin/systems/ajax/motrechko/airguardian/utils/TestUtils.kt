@@ -3,10 +3,10 @@ package systems.ajax.motrechko.airguardian.utils
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Parser
 import io.nats.client.Connection
+import systems.ajax.motrechko.airguardian.drone.domain.Drone
 import systems.ajax.motrechko.airguardian.drone.domain.DroneSize
 import systems.ajax.motrechko.airguardian.drone.domain.DroneStatus
 import systems.ajax.motrechko.airguardian.drone.domain.DroneType
-import systems.ajax.motrechko.airguardian.drone.infrastructure.adapters.repository.entity.MongoDrone
 import java.time.Duration
 
 object TestUtils {
@@ -24,7 +24,7 @@ object TestUtils {
         return parser.parseFrom(response.get().data)
     }
 
-    val DRONE_ONE = MongoDrone(
+    val DRONE_ONE = Drone(
         id = "111115432345678987654321",
         model = "test one",
         type = listOf(DroneType.FPV),
@@ -40,7 +40,7 @@ object TestUtils {
         maxFlightAltitude = 30.0
     )
 
-    val DRONE_TWO = MongoDrone(
+    val DRONE_TWO = Drone(
         id = "222225432304628987654321",
         model = "test two",
         type = listOf(DroneType.FPV, DroneType.MONITORING),
@@ -56,7 +56,7 @@ object TestUtils {
         maxFlightAltitude = 30.0
     )
 
-    val DRONE_THREE = MongoDrone(
+    val DRONE_THREE = Drone(
         id = "333335432345677268654321",
         model = "test three",
         type = listOf(DroneType.DELIVERY),
