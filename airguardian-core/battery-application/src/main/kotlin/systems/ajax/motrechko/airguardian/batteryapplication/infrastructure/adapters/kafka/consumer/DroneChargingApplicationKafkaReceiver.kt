@@ -18,7 +18,7 @@ class DroneChargingApplicationKafkaReceiver(
         droneChargingApplicationKafkaConsumer.receiveAutoAck()
             .flatMap { fluxRecord ->
                 fluxRecord
-                    .map {
+                    .flatMap {
                         batteryDroneChargingApplicationEventNatsController.publishEvent(it.value().application)
                     }
             }

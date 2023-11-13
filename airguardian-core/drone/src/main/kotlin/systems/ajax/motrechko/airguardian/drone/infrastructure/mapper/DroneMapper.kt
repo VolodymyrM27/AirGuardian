@@ -3,6 +3,7 @@ package systems.ajax.motrechko.airguardian.drone.infrastructure.mapper
 import org.bson.types.ObjectId
 import systems.ajax.motrechko.airguardian.drone.domain.Drone
 import systems.ajax.motrechko.airguardian.drone.infrastructure.adapters.repository.entity.MongoDrone
+import systems.ajax.motrechko.airguardian.drone.infrastructure.adapters.repository.entity.RedisDrone
 import systems.ajax.motrechko.airguardian.drone.infrastructure.dto.response.DroneResponse
 import systems.ajax.motrechko.airguardian.commonresponse.drone.Drone as ProtoDrone
 
@@ -52,6 +53,78 @@ fun MongoDrone.toDrone() = Drone(
     maxFlightAltitude = maxFlightAltitude,
     flightHistory = flightHistory
 )
+
+fun MongoDrone.toRedisDrone(): RedisDrone{
+    return RedisDrone(
+        id = id,
+        model = model,
+        type = type,
+        speed = speed,
+        weight = weight,
+        numberOfPropellers = numberOfPropellers,
+        loadCapacity = loadCapacity,
+        cost = cost,
+        status = status,
+        batteryLevel = batteryLevel,
+        size = size,
+        maxFlightAltitude = maxFlightAltitude,
+        flightHistory = flightHistory
+    )
+}
+
+fun RedisDrone.toMongoDrone(): MongoDrone{
+    return MongoDrone(
+        id = id,
+        model = model,
+        type = type,
+        speed = speed,
+        weight = weight,
+        numberOfPropellers = numberOfPropellers,
+        loadCapacity = loadCapacity,
+        cost = cost,
+        status = status,
+        batteryLevel = batteryLevel,
+        size = size,
+        maxFlightAltitude = maxFlightAltitude,
+        flightHistory = flightHistory
+    )
+}
+
+fun RedisDrone.toDomain(): Drone{
+    return Drone(
+        id = id?.toHexString(),
+        model = model,
+        type = type,
+        speed = speed,
+        weight = weight,
+        numberOfPropellers = numberOfPropellers,
+        loadCapacity = loadCapacity,
+        cost = cost,
+        status = status,
+        batteryLevel = batteryLevel,
+        size = size,
+        maxFlightAltitude = maxFlightAltitude,
+        flightHistory = flightHistory
+    )
+}
+
+fun Drone.toRedisDrone(): RedisDrone{
+    return RedisDrone(
+        id = if (!id.isNullOrEmpty()) ObjectId(id) else ObjectId(),
+        model = model,
+        type = type,
+        speed = speed,
+        weight = weight,
+        numberOfPropellers = numberOfPropellers,
+        loadCapacity = loadCapacity,
+        cost = cost,
+        status = status,
+        batteryLevel = batteryLevel,
+        size = size,
+        maxFlightAltitude = maxFlightAltitude,
+        flightHistory = flightHistory
+    )
+}
 
 fun List<Drone>.toResponse(): List<DroneResponse> {
     return this.map { drone ->

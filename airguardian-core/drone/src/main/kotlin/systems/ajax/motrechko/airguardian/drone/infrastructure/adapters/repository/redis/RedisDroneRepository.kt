@@ -12,15 +12,15 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.switchIfEmptyDeferred
 import systems.ajax.motrechko.airguardian.drone.application.port.DroneRepositoryOutPort
 import systems.ajax.motrechko.airguardian.drone.domain.Drone
-import systems.ajax.motrechko.airguardian.drone.infrastructure.adapters.repository.entity.MongoDrone
-import systems.ajax.motrechko.airguardian.drone.infrastructure.mapper.toDrone
-import systems.ajax.motrechko.airguardian.drone.infrastructure.mapper.toMongoDrone
+import systems.ajax.motrechko.airguardian.drone.infrastructure.adapters.repository.entity.RedisDrone
+import systems.ajax.motrechko.airguardian.drone.infrastructure.mapper.toDomain
+import systems.ajax.motrechko.airguardian.drone.infrastructure.mapper.toRedisDrone
 import java.time.Duration
 
 @Primary
 @Repository
 class RedisDroneRepository(
-    private val reactiveRedisRepository: ReactiveRedisTemplate<String, MongoDrone>,
+    private val reactiveRedisRepository: ReactiveRedisTemplate<String, RedisDrone>,
     @Qualifier("mongoDroneRepository") private val droneRepository: DroneRepositoryOutPort,
     @Value("\${spring.data.redis.key.prefix}") private val dronePrefix: String,
     @Value("\${spring.data.redis.ttl.minutes}") private val ttlMinutes: String
@@ -34,7 +34,7 @@ class RedisDroneRepository(
     override fun findById(id: String): Mono<Drone> {
         return reactiveRedisRepository.opsForValue()
             .get(dronePrefix + id)
-            .map { it.toDrone() }
+            .map { it.toDomain() }
             .switchIfEmpty {
                 droneRepository.findById(id)
                     .flatMap { drone ->
@@ -53,7 +53,7 @@ class RedisDroneRepository(
             reactiveRedisRepository.opsForValue()
                 .get(it)
                 .map {
-                    it.toDrone()
+                    it.toDomain()
                 }
         }
             .switchIfEmptyDeferred {
@@ -76,7 +76,7 @@ class RedisDroneRepository(
             reactiveRedisRepository.opsForValue()
                 .set(
                     dronePrefix + key,
-                    drone.toMongoDrone(),
+                    drone.toRedisDrone(),
                     Duration.ofMinutes(ttlMinutes.toLong())
                 ).thenReturn(drone)
         } else {

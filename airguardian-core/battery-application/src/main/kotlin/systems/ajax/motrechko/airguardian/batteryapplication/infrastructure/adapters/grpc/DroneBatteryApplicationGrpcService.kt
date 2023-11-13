@@ -19,7 +19,7 @@ class DroneBatteryApplicationGrpcService(
     private val batteryDroneChargingApplicationEventNatsController:
     BatteryApplicationNatsSubscriber<DroneBatteryChargingApplicationEvent>,
 ) : ReactorChargingDroneBatteryApplicationGrpc.ChargingDroneBatteryApplicationImplBase() {
-    
+
     override fun getBatteryChargingApplication(request: Mono<GetAllApplicationsRequest>)
             : Flux<GetAllApplicationsResponse> {
         return request.flatMapMany { handleBatteryChargingApplication() }

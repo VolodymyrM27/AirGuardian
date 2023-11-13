@@ -18,7 +18,6 @@ class BatteryDroneChargingApplicationEventNatsPublisher(
         val eventMessage = DroneBatteryChargingApplicationEvent.newBuilder().apply {
             setApplication(application)
         }.build()
-
         return Mono.fromSupplier {
             connection.publish(
                 NatsSubject.BatteryDroneChargingApplication.NEW_APPLICATION,
@@ -32,8 +31,8 @@ class BatteryDroneChargingApplicationEventNatsPublisher(
 
     override val dispatcher: Dispatcher = connection.createDispatcher()
 
-    override fun subscribeToEvents(eventType: String): Flux<DroneBatteryChargingApplicationEvent> {
-        return Flux.create { sink ->
+    override fun subscribeToEvents(eventType: String): Flux<DroneBatteryChargingApplicationEvent> =
+        Flux.create { sink ->
             dispatcher.apply {
                 subscribe(eventType) { message ->
                     val parsedData = parser.parseFrom(message.data)
@@ -41,5 +40,4 @@ class BatteryDroneChargingApplicationEventNatsPublisher(
                 }
             }
         }
-    }
 }

@@ -10,7 +10,6 @@ import systems.ajax.motrechko.airguardian.batteryapplication.application.port.Dr
 import systems.ajax.motrechko.airguardian.batteryapplication.application.port.DroneChargingApplicationProducerOutPort
 import systems.ajax.motrechko.airguardian.batteryapplication.domain.BatteryApplication
 import systems.ajax.motrechko.airguardian.batteryapplication.domain.BatteryApplicationStatus
-import systems.ajax.motrechko.airguardian.batteryapplication.infrastructure.adapters.mapper.toProto
 import systems.ajax.motrechko.airguardian.core.application.annotation.MyScheduled
 import systems.ajax.motrechko.airguardian.drone.application.port.DroneRepositoryOutPort
 import systems.ajax.motrechko.airguardian.drone.domain.Drone
@@ -46,8 +45,9 @@ class DroneBatteryCheckService(
                     serviceMessage = "The drone needs to be charged, battery level is ${drone.batteryLevel}%.",
                     timestamp = LocalDateTime.now(),
                     status = BatteryApplicationStatus.NEW,
+                    droneId = drone.id!!
                 )
-                droneChargingApplicationKafkaProducer.sendBatteryChargingApplication(application.toProto())
+                droneChargingApplicationKafkaProducer.sendBatteryChargingApplication(application)
                     .then(droneBatteryApplicationService.saveBatteryApplication(application))
             }
             .doOnSuccess {
