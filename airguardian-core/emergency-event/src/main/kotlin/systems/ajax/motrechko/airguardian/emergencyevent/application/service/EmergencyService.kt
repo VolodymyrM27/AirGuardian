@@ -1,12 +1,12 @@
 package systems.ajax.motrechko.airguardian.emergencyevent.application.service
 
-import systems.ajax.motrechko.airguardian.core.application.exception.DroneIsNotAvailableException
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
+import systems.ajax.motrechko.airguardian.core.application.exception.DroneIsNotAvailableException
 import systems.ajax.motrechko.airguardian.core.shared.util.CoordinatesUtils
 import systems.ajax.motrechko.airguardian.drone.application.port.DroneServiceInPort
 import systems.ajax.motrechko.airguardian.drone.application.util.BatteryCalculator
@@ -27,17 +27,13 @@ class EmergencyService(
 ): EmergencyServiceInPort {
     @Scheduled(fixedDelay = 60000)
     override fun processEmergencyEventScheduler() {
-        val emergencyEventFlux = emergencyEventRepository.findUnprocessedEmergencyEvents()
-        val countMono = emergencyEventFlux.count()
-
-        countMono.subscribe { count ->
-            logger.info("Found {} unprocessed emergency events", count)
-        }
-
-        emergencyEventFlux.collectList().flatMap {
-            it.map { processEmergencyEvent(it) }
-            it.toMono()
-        }.subscribe()
+        emergencyEventRepository.findUnprocessedEmergencyEvents()
+            .flatMap { processEmergencyEvent(it) }
+            .count()
+            .doOnNext { count ->
+                logger.info("Found {} unprocessed emergency events", count)
+            }
+            .subscribe()
     }
 
     override fun processEmergencyEvent(emergencyEvent: EmergencyEvent): Mono<EmergencyEvent> {

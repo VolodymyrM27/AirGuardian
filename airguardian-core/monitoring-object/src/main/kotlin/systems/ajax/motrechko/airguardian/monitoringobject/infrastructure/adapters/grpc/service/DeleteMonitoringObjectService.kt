@@ -4,11 +4,11 @@ import org.springframework.stereotype.Service
 import reactor.kotlin.core.publisher.toMono
 import systems.ajax.motrechko.airguardian.input.reqrepl.monitoringobject.delete_monitoring_object.DeleteMonitoringObjectRequest
 import systems.ajax.motrechko.airguardian.input.reqrepl.monitoringobject.delete_monitoring_object.DeleteMonitoringObjectResponse
-import systems.ajax.motrechko.airguardian.monitoringobject.application.service.MonitoringObjectService
+import systems.ajax.motrechko.airguardian.monitoringobject.application.port.MonitoringObjectServiceInPort
 
 @Service
 class DeleteMonitoringObjectService(
-    private val monitoringObjectService: MonitoringObjectService
+    private val monitoringObjectService: MonitoringObjectServiceInPort
 ) {
     fun processDelete(deleteMonitoringObjectRequest: DeleteMonitoringObjectRequest) =
         monitoringObjectService.deleteById(deleteMonitoringObjectRequest.monitoringObjectId)

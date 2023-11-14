@@ -1,4 +1,4 @@
-package systems.ajax.motrechko.airguardian.controller.nats
+package systems.ajax.motrechko.airguardian
 
 import io.nats.client.Connection
 import org.assertj.core.api.Assertions.assertThat

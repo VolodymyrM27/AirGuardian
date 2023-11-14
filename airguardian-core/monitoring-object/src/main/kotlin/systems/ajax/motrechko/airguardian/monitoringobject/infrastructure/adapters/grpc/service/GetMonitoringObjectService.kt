@@ -6,12 +6,12 @@ import systems.ajax.motrechko.airguardian.commonresponse.monitoring_object.proto
 import systems.ajax.motrechko.airguardian.input.reqrepl.monitoringobject.get_monitoring_object.GetMonitoringObjectRequest
 import systems.ajax.motrechko.airguardian.input.reqrepl.monitoringobject.get_monitoring_object.GetMonitoringObjectResponse
 import systems.ajax.motrechko.airguardian.input.reqrepl.monitoringobject.get_monitoring_objects.GetMonitoringObjectsResponse
-import systems.ajax.motrechko.airguardian.monitoringobject.application.service.MonitoringObjectService
+import systems.ajax.motrechko.airguardian.monitoringobject.application.port.MonitoringObjectServiceInPort
 import systems.ajax.motrechko.airguardian.monitoringobject.infrastructure.mapper.toProto
 
 @Service
 class GetMonitoringObjectService(
-    private val monitoringObjectService: MonitoringObjectService
+    private val monitoringObjectService: MonitoringObjectServiceInPort
 ) {
     fun processGetAll() =
         monitoringObjectService.findAll()

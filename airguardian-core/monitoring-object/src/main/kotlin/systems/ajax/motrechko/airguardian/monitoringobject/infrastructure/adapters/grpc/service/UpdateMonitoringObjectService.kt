@@ -5,13 +5,13 @@ import reactor.kotlin.core.publisher.toMono
 import systems.ajax.motrechko.airguardian.commonresponse.monitoring_object.proto.MonitoringObject
 import systems.ajax.motrechko.airguardian.input.reqrepl.monitoringobject.update_monitoring_object.UpdateMonitoringObjectRequest
 import systems.ajax.motrechko.airguardian.input.reqrepl.monitoringobject.update_monitoring_object.UpdateMonitoringObjectResponse
-import systems.ajax.motrechko.airguardian.monitoringobject.application.service.MonitoringObjectService
+import systems.ajax.motrechko.airguardian.monitoringobject.application.port.MonitoringObjectServiceInPort
 import systems.ajax.motrechko.airguardian.monitoringobject.infrastructure.mapper.toEntity
 import systems.ajax.motrechko.airguardian.monitoringobject.infrastructure.mapper.toProto
 
 @Service
 class UpdateMonitoringObjectService(
-    private val monitoringObjectService: MonitoringObjectService
+    private val monitoringObjectService: MonitoringObjectServiceInPort
 ) {
     fun processUpdate(updateMonitoringObjectRequest: UpdateMonitoringObjectRequest) =
         monitoringObjectService.update(updateMonitoringObjectRequest.monitoringObject.toEntity())
